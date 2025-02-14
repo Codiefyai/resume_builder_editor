@@ -1,15 +1,21 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Resume Builder & Editor</title>
+    <!-- Favicon -->
+    <link rel="icon" href="https://i.ibb.co/JFj2FQfG/logo-editorush-removebg-preview.png" type="image/png">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- jsPDF Library (REQUIRED!) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+     <!-- jsPDF Autotable plugin (Optional but VERY useful) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+
     <style>
-        /* Base Styles, Input/Button, Loading, Error, Input Group (from previous) */
+    /* ... (All your CSS styles from before) ... */
+    /* Base Styles, Input/Button, Loading, Error, Input Group (from previous) */
         body {
             font-family: 'Orbitron', sans-serif; /* Futuristic font */
             margin: 0;
@@ -477,830 +483,1066 @@ textarea:required:invalid{
         }
     </style>
 </head>
-
 <body>
-    <div class="container">
-        <h1>AI Resume Builder & Editor</h1>
+<div class="container">
+    <h1>AI Resume Builder & Editor</h1>
 
-        <!-- Page 1: Basic Information -->
-        <div id="page1" class="page active">
-            <p>Provide your basic information below and click "Next".</p>
+    <!-- Page 1: Basic Information -->
+    <div id="page1" class="page active">
+        <p>Provide your basic information below and click "Next".</p>
 
-           <div class="input-group">
-                <label for="name">Full Name:</label>
-                <input type="text" id="name" placeholder="e.g., John Doe" required>
-            </div>
-            <div class="input-group">
-                <label for="address">Address:</label>
-                <input type="text" id="address" placeholder="e.g., 123 Main St, Anytown" required>
-            </div>
-            <div class="input-group">
-                <label for="phone">Phone Number:</label>
-                <input type="text" id="phone" placeholder="e.g., (123) 456-7890" required>
-            </div>
-            <div class="input-group">
-                <label for="email">Email Address:</label>
-                <input type="text" id="email" placeholder="e.g., john.doe@example.com" required>
-            </div>
-            <div class="input-group">
-                <label for="linkedin">LinkedIn Profile (Optional):</label>
-                <input type="text" id="linkedin" placeholder="e.g., linkedin.com/in/johndoe">
-            </div>
-            <div class="input-group">
-                <label for="github">GitHub Profile (Optional):</label>
-                <input type="text" id="github" placeholder="e.g., github.com/johndoe">
-            </div>
-
-            <div id="error-message-page1" class="error-message"></div>
-            <div class="page-navigation">
-              <button id="next1">Next</button>
-            </div>
-
+        <div class="input-group">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" placeholder="e.g., John Doe" required>
+        </div>
+        <div class="input-group">
+            <label for="address">Address:</label>
+            <input type="text" id="address" placeholder="e.g., 123 Main St, Anytown" required>
+        </div>
+        <div class="input-group">
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" placeholder="e.g., (123) 456-7890" required>
+        </div>
+        <div class="input-group">
+            <label for="email">Email Address:</label>
+            <input type="text" id="email" placeholder="e.g., john.doe@example.com" required>
+        </div>
+        <div class="input-group">
+            <label for="linkedin">LinkedIn Profile (Optional):</label>
+            <input type="text" id="linkedin" placeholder="e.g., linkedin.com/in/johndoe">
+        </div>
+        <div class="input-group">
+            <label for="github">GitHub Profile (Optional):</label>
+            <input type="text" id="github" placeholder="e.g., github.com/johndoe">
         </div>
 
-        <!-- Page 2:  Job Details, Skills, etc. -->
-        <div id="page2" class="page">
-            <p>Provide additional resume details and click "Next".</p>
-             <div class="input-group">
-                <label for="jobTitle">Target Job Title:</label>
-                <input type="text" id="jobTitle" placeholder="e.g., Software Engineer" required>
-            </div>
-            <div class="input-group">
-                <label for="industry">Target Industry:</label>
-                <input type="text" id="industry" placeholder="e.g., Technology" required>
-            </div>
-            <div class="input-group">
-                <label for="skills">Key Skills (comma-separated):</label>
-                <input type="text" id="skills" placeholder="e.g., JavaScript, Python, React" required>
-            </div>
-            <div class="input-group">
-                <label for="experience">Recent Job Experiences:</label>
-                <textarea id="experience"
-                    placeholder="List your job experiences and responsibilities. Format: Job Title, Company, Dates, Responsibilities" required></textarea>
-            </div>
-            <div class="input-group">
-                <label for="achievement">Professional Achievement:</label>
-                <input type="text" id="achievement" placeholder='e.g., "Increased sales by 30% in 6 months"'>
-            </div>
-            <div class="input-group">
-                <label for="education">Education:</label>
-                <textarea id="education" placeholder="List your education. Format: Degree, University, Dates" required></textarea>
-            </div>
-            <div class="input-group">
-                <label for="certifications">Certifications/Training (comma-separated):</label>
-                <input type="text" id="certifications" placeholder="e.g., AWS Certified, PMP">
-            </div>
-            <div class="input-group">
-                <label for="summary_option">Do you need Professional Summary:</label>
-                <select id="summary_option">
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                </select>
-            </div>
-
-            <div id="error-message-page2" class="error-message"></div>
-            <div class="page-navigation">
-              <button id="previewButton">Preview Resume</button>
-            </div>
-        </div>
-
-        <!-- Page 3: Editor and Preview -->
-        <div id="page3" class="page">
-            <div id="loading">
-  <div class="spinner"></div> <!--  loading animation -->
-  Generating Resume...
-</div>
-
-            <div id="result-container">
-                <h2>Resume Preview:</h2>
-                <div id="resume-preview"></div>
-                <button id="editButton">Edit Resume</button> <!-- Edit button -->
-                <h2>Edit Resume:</h2>
-                <div id="resume-editor" contenteditable="true"></div>
-                <!-- Toolbar (fixed) -->
-                <div id="toolbar">
-                    <button id="fontFamilyButton" class="toolbar-button" title="Font Family"><i class="fas fa-font"></i></button>
-                    <select id="fontFamily" class="toolbar-select">
-                        <option value="Arial">Arial</option>
-                        <option value="Verdana">Verdana</option>
-                        <option value="Tahoma">Tahoma</option>
-                        <option value="Georgia">Georgia</option>
-                        <option value="'Times New Roman'">Times New Roman</option>
-                        <option value="Courier New">Courier New</option>
-                        <option value="'Open Sans'">Open Sans</option>
-                    </select>
-
-                    <button id="fontSizeButton" class="toolbar-button" title="Font Size"><i
-                            class="fas fa-text-height"></i></button>
-                    <select id="fontSize" class="toolbar-select">
-                        <option value="10px">10px</option>
-                        <option value="12px" selected>12px</option>
-                        <option value="14px">14px</option>
-                        <option value="16px">16px</option>
-                        <option value="18px">18px</option>
-                        <option value="20px">20px</option>
-                        <option value="24px">24px</option>
-                    </select>
-
-                   <button id="headingsButton" class="toolbar-button" title="Heading Style"><i
-                            class="fas fa-heading"></i></button>
-                    <select id="headings" class="toolbar-select">
-                        <option value="p">Normal Text</option>
-                        <option value="h1">Heading 1</option>
-                        <option value="h2">Heading 2</option>
-                        <option value="h3">Heading 3</option>
-                    </select>
-
-                    <button id="boldButton" class="toolbar-button" title="Bold"><i class="fas fa-bold"></i></button>
-                    <button id="italicButton" class="toolbar-button" title="Italic"><i
-                            class="fas fa-italic"></i></button>
-                    <button id="underlineButton" class="toolbar-button" title="Underline"><i
-                            class="fas fa-underline"></i></button>
-                    <button id="strikethroughButton" class="toolbar-button" title="Strikethrough"><i
-                            class="fas fa-strikethrough"></i></button>
-                   <button id="uppercaseButton" class="toolbar-button" title="Uppercase">ABC</button>
-
-                    <button id="textAlignButton" class="toolbar-button" title="Text Align"><i
-                            class="fas fa-align-left"></i></button>
-                    <select id="textAlign" class="toolbar-select">
-                        <option value="left">Align Left</option>
-                        <option value="center">Center</option>
-                        <option value="right">Align Right</option>
-                        <option value="justify">Justify</option>
-                    </select>
-
-                    <button id="listButton" class="toolbar-button" title="Bullet List"><i
-                            class="fas fa-list-ul"></i></button>
-                    <button id="numberListButton" class="toolbar-button" title="Numbered List"><i
-                            class="fas fa-list-ol"></i></button>
-
-                    <button id="textColorButton" class="toolbar-button" title="Text Color"><i class="fas fa-palette"></i></button>
-                    <input type="color" id="textColor" class="color-picker">
-
-                   <button id="backgroundColorButton" class="toolbar-button" title="Background Color"><i
-                            class="fas fa-fill-drip"></i></button>
-                    <input type="color" id="backgroundColor" class="color-picker">
-
-
-                    <button id="downloadButton" class="toolbar-button" title="Download PDF"><i
-                            class="fas fa-download"></i></button>
-                </div>
-            </div>
+        <div id="error-message-page1" class="error-message"></div>
+        <div class="page-navigation">
+            <button id="next1">Next</button>
         </div>
 
     </div>
 
-    <script>
-        const loadingIndicator = document.getElementById('loading');
-        const resultContainer = document.getElementById('result-container');
-        const resumePreviewDiv = document.getElementById('resume-preview');
-        const resumeEditorDiv = document.getElementById('resume-editor');
-        const downloadButton = document.getElementById('downloadButton');
-        const GEMINI_API_KEY = "{{ api_key }}"; // Get from Flask 
+    <!-- Page 2:  Job Details, Skills, etc. -->
+    <div id="page2" class="page">
+        <p>Provide additional resume details and click "Next".</p>
+        <div class="input-group">
+            <label for="jobTitle">Target Job Title:</label>
+            <input type="text" id="jobTitle" placeholder="e.g., Software Engineer" required>
+        </div>
+        <div class="input-group">
+            <label for="industry">Target Industry:</label>
+            <input type="text" id="industry" placeholder="e.g., Technology" required>
+        </div>
+        <div class="input-group">
+            <label for="skills">Key Skills (comma-separated):</label>
+            <input type="text" id="skills" placeholder="e.g., JavaScript, Python, React" required>
+        </div>
+        <div class="input-group">
+            <label for="experience">Recent Job Experiences:</label>
+            <textarea id="experience"
+                      placeholder="List your job experiences and responsibilities. Format: Job Title, Company, Dates, Responsibilities"
+                      required></textarea>
+        </div>
+        <div class="input-group">
+            <label for="achievement">Professional Achievement:</label>
+            <input type="text" id="achievement" placeholder='e.g., "Increased sales by 30% in 6 months"'>
+        </div>
+        <div class="input-group">
+            <label for="education">Education:</label>
+            <textarea id="education" placeholder="List your education. Format: Degree, University, Dates"
+                      required></textarea>
+        </div>
+        <div class="input-group">
+            <label for="certifications">Certifications/Training (comma-separated):</label>
+            <input type="text" id="certifications" placeholder="e.g., AWS Certified, PMP">
+        </div>
+        <div class="input-group">
+            <label for="summary_option">Do you need Professional Summary:</label>
+            <select id="summary_option">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
 
-        // Input elements
-        const nameInput = document.getElementById('name');
-        const addressInput = document.getElementById('address');
-        const phoneInput = document.getElementById('phone');
-        const emailInput = document.getElementById('email');
-        const linkedinInput = document.getElementById('linkedin');
-        const githubInput = document.getElementById('github');
-        const jobTitleInput = document.getElementById('jobTitle');
-        const industryInput = document.getElementById('industry');
-        const skillsInput = document.getElementById('skills');
-        const experienceInput = document.getElementById('experience');
-        const achievementInput = document.getElementById('achievement');
-        const educationInput = document.getElementById('education');
-        const certificationsInput = document.getElementById('certifications');
-        const summaryOptionSelect = document.getElementById('summary_option');
+        <div id="error-message-page2" class="error-message"></div>
+        <div class="page-navigation">
+            <button id="previewButton">Preview Resume</button>
+        </div>
+    </div>
 
-        // --- Toolbar Elements ---
-        const fontFamilySelect = document.getElementById('fontFamily');
-        const fontSizeSelect = document.getElementById('fontSize');
-        const boldButton = document.getElementById('boldButton');
-        const italicButton = document.getElementById('italicButton');
-        const underlineButton = document.getElementById('underlineButton');
-        const strikethroughButton = document.getElementById('strikethroughButton');
-        const uppercaseButton = document.getElementById('uppercaseButton');
-        const textAlignSelect = document.getElementById('textAlign');
-        const listButton = document.getElementById('listButton');
-        const numberListButton = document.getElementById('numberListButton');
-        const textColorPicker = document.getElementById('textColor');
-        const backgroundColorPicker = document.getElementById('backgroundColor');
-        const headingsSelect = document.getElementById('headings');
-        const fontFamilyButton = document.getElementById('fontFamilyButton');
-        const fontSizeButton = document.getElementById('fontSizeButton');
-        const textAlignButton = document.getElementById('textAlignButton');
-        const headingsButton = document.getElementById('headingsButton');
-        const textColorButton = document.getElementById('textColorButton');
-        const backgroundColorButton = document.getElementById('backgroundColorButton');
+    <!-- Page 3: Editor and Preview -->
+    <div id="page3" class="page">
+        <div id="loading">
+            <div class="spinner"></div> <!--  loading animation -->
+            Generating Resume...
+        </div>
+
+        <div id="result-container">
+            <h2>Resume Preview:</h2>
+            <div id="resume-preview"></div>
+            <button id="editButton">Edit Resume</button> <!-- Edit button -->
+            <h2>Edit Resume:</h2>
+            <div id="resume-editor" contenteditable="true"></div>
+            <!-- Toolbar (fixed) -->
+            <div id="toolbar">
+                <button id="fontFamilyButton" class="toolbar-button" title="Font Family"><i class="fas fa-font"></i>
+                </button>
+                <select id="fontFamily" class="toolbar-select">
+                    <option value="Arial">Arial</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Tahoma">Tahoma</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="'Times New Roman'">Times New Roman</option>
+                    <option value="Courier New">Courier New</option>
+                    <option value="'Open Sans'">Open Sans</option>
+                </select>
+
+                <button id="fontSizeButton" class="toolbar-button" title="Font Size"><i
+                        class="fas fa-text-height"></i></button>
+                <select id="fontSize" class="toolbar-select">
+                    <option value="10px">10px</option>
+                    <option value="12px" selected>12px</option>
+                    <option value="14px">14px</option>
+                    <option value="16px">16px</option>
+                    <option value="18px">18px</option>
+                    <option value="20px">20px</option>
+                    <option value="24px">24px</option>
+                </select>
+
+                <button id="headingsButton" class="toolbar-button" title="Heading Style"><i
+                        class="fas fa-heading"></i></button>
+                <select id="headings" class="toolbar-select">
+                    <option value="p">Normal Text</option>
+                    <option value="h1">Heading 1</option>
+                    <option value="h2">Heading 2</option>
+                    <option value="h3">Heading 3</option>
+                </select>
+
+                <button id="boldButton" class="toolbar-button" title="Bold"><i class="fas fa-bold"></i></button>
+                <button id="italicButton" class="toolbar-button" title="Italic"><i
+                        class="fas fa-italic"></i></button>
+                <button id="underlineButton" class="toolbar-button" title="Underline"><i
+                        class="fas fa-underline"></i></button>
+                <button id="strikethroughButton" class="toolbar-button" title="Strikethrough"><i
+                        class="fas fa-strikethrough"></i></button>
+                <button id="uppercaseButton" class="toolbar-button" title="Uppercase">ABC</button>
+
+                <button id="textAlignButton" class="toolbar-button" title="Text Align"><i
+                        class="fas fa-align-left"></i></button>
+                <select id="textAlign" class="toolbar-select">
+                    <option value="left">Align Left</option>
+                    <option value="center">Center</option>
+                    <option value="right">Align Right</option>
+                    <option value="justify">Justify</option>
+                </select>
+
+                <button id="listButton" class="toolbar-button" title="Bullet List"><i
+                        class="fas fa-list-ul"></i></button>
+                <button id="numberListButton" class="toolbar-button" title="Numbered List"><i
+                        class="fas fa-list-ol"></i></button>
+
+                <button id="textColorButton" class="toolbar-button" title="Text Color"><i
+                        class="fas fa-palette"></i></button>
+                <input type="color" id="textColor" class="color-picker">
+
+                <button id="backgroundColorButton" class="toolbar-button" title="Background Color"><i
+                        class="fas fa-fill-drip"></i></button>
+                <input type="color" id="backgroundColor" class="color-picker">
 
 
-        // --- Page Navigation ---
-        const page1 = document.getElementById('page1');
-        const page2 = document.getElementById('page2');
-        const page3 = document.getElementById('page3');
-        const next1Button = document.getElementById('next1');
-        const previewButton = document.getElementById('previewButton');
-        const errorMessagePage1 = document.getElementById('error-message-page1');
-        const errorMessagePage2 = document.getElementById('error-message-page2');
-        const editButton = document.getElementById('editButton'); // EDIT button
-        resultContainer.style.display = "none";
+                <button id="downloadButton" class="toolbar-button" title="Download PDF"><i
+                        class="fas fa-download"></i></button>
+            </div>
+        </div>
+    </div>
 
-        next1Button.addEventListener('click', () => {
-            // Inline validation, adding 'invalid' class
-            let isValid = true;
-            if (!nameInput.value.trim()) {
-                nameInput.classList.add('invalid');
-                isValid = false;
-            } else {
-                nameInput.classList.remove('invalid');
-            }
-             if (!addressInput.value.trim()) {
-                addressInput.classList.add('invalid');
-                isValid = false;
-            } else {
-                addressInput.classList.remove('invalid');
-            }
-            if (!phoneInput.value.trim()) {
-                phoneInput.classList.add('invalid');
-                isValid = false;
-            } else {
-                phoneInput.classList.remove('invalid');
-            }
-            if (!emailInput.value.trim()) {
-                emailInput.classList.add('invalid');
-                isValid = false;
-            } else {
-                emailInput.classList.remove('invalid');
-            }
+</div>
 
-            if (!isValid) {
-                showError("Please fill in all required fields.", errorMessagePage1);
-                return;
-            }
+<script>
+    const loadingIndicator = document.getElementById('loading');
+    const resultContainer = document.getElementById('result-container');
+    const resumePreviewDiv = document.getElementById('resume-preview');
+    const resumeEditorDiv = document.getElementById('resume-editor');
+    const downloadButton = document.getElementById('downloadButton');
+    const GEMINI_API_KEY = "AIzaSyAXDb3u8OE_GmlIu5kYp0CnE1MrBMxJhXs"; //  REPLACE with your actual API key
 
-            hideError(errorMessagePage1);
-            page1.classList.remove('active');
-            page2.classList.add('active');
-        });
+    // Input elements
+    const nameInput = document.getElementById('name');
+    const addressInput = document.getElementById('address');
+    const phoneInput = document.getElementById('phone');
+    const emailInput = document.getElementById('email');
+    const linkedinInput = document.getElementById('linkedin');
+    const githubInput = document.getElementById('github');
+    const jobTitleInput = document.getElementById('jobTitle');
+    const industryInput = document.getElementById('industry');
+    const skillsInput = document.getElementById('skills');
+    const experienceInput = document.getElementById('experience');
+    const achievementInput = document.getElementById('achievement');
+    const educationInput = document.getElementById('education');
+    const certificationsInput = document.getElementById('certifications');
+    const summaryOptionSelect = document.getElementById('summary_option');
 
-        // --- Preview Button (Generates and Shows Preview) ---
-        previewButton.addEventListener('click', async () => {
-             // Validate required fields on Page 2
-            if (!jobTitleInput.value.trim() || !industryInput.value.trim() || !skillsInput.value.trim() || !experienceInput.value.trim() || !educationInput.value.trim()) {
-                showError("Please fill in all required fields on this page.", errorMessagePage2);
-                return; // Stop if validation fails
-              }
+    // --- Toolbar Elements ---
+    const fontFamilySelect = document.getElementById('fontFamily');
+    const fontSizeSelect = document.getElementById('fontSize');
+    const boldButton = document.getElementById('boldButton');
+    const italicButton = document.getElementById('italicButton');
+    const underlineButton = document.getElementById('underlineButton');
+    const strikethroughButton = document.getElementById('strikethroughButton');
+    const uppercaseButton = document.getElementById('uppercaseButton');
+    const textAlignSelect = document.getElementById('textAlign');
+    const listButton = document.getElementById('listButton');
+    const numberListButton = document.getElementById('numberListButton');
+    const textColorPicker = document.getElementById('textColor');
+    const backgroundColorPicker = document.getElementById('backgroundColor');
+    const headingsSelect = document.getElementById('headings');
+    const fontFamilyButton = document.getElementById('fontFamilyButton');
+    const fontSizeButton = document.getElementById('fontSizeButton');
+    const textAlignButton = document.getElementById('textAlignButton');
+    const headingsButton = document.getElementById('headingsButton');
+    const textColorButton = document.getElementById('textColorButton');
+    const backgroundColorButton = document.getElementById('backgroundColorButton');
 
-            hideError(errorMessagePage2);
-            page2.classList.remove('active');
-            page3.classList.add('active');
-            loadingIndicator.classList.add('active'); // Show loading
 
-            // --- Resume Generation (Gemini API call) ---
-             const name = nameInput.value.trim();
-            const address = addressInput.value.trim();
-            const phone = phoneInput.value.trim();
-            const email = emailInput.value.trim();
-            const linkedin = linkedinInput.value.trim();
-            const github = githubInput.value.trim();
-            const jobTitle = jobTitleInput.value.trim();
-            const industry = industryInput.value.trim();
-            const skills = skillsInput.value.trim();
-            const experience = experienceInput.value.trim();
-            const achievement = achievementInput.value.trim();
-            const education = educationInput.value.trim();
-            const certifications = certificationsInput.value.trim();
-            const summaryOption = summaryOptionSelect.value;
+    // --- Page Navigation ---
+    const page1 = document.getElementById('page1');
+    const page2 = document.getElementById('page2');
+    const page3 = document.getElementById('page3');
+    const next1Button = document.getElementById('next1');
+    const previewButton = document.getElementById('previewButton');
+    const errorMessagePage1 = document.getElementById('error-message-page1');
+    const errorMessagePage2 = document.getElementById('error-message-page2');
+    const editButton = document.getElementById('editButton'); // EDIT button
+    resultContainer.style.display = "none";
 
-            let geminiPrompt = `Create a modern and professional resume template with a clean, ATS-friendly layout. The color scheme should use neutral tones (white, gray, and navy blue) with subtle accent colors for highlights. The font should be a mix of bold sans-serif for headings and light serif for body text. Include sections for Profile Summary, Work Experience, Skills, Education, and Contact Information. Add icons for social media links and a small profile photo placeholder in the header for a sleek, polished look. Omit unnecessary symbols and use a single-column layout. Format the output for readability, using appropriate spacing and indentation. Ensure the resume is well-organized and easy to scan.
+    next1Button.addEventListener('click', () => {
+        // Inline validation, adding 'invalid' class
+        let isValid = true;
+        if (!nameInput.value.trim()) {
+            nameInput.classList.add('invalid');
+            isValid = false;
+        } else {
+            nameInput.classList.remove('invalid');
+        }
+        if (!addressInput.value.trim()) {
+            addressInput.classList.add('invalid');
+            isValid = false;
+        } else {
+            addressInput.classList.remove('invalid');
+        }
+        if (!phoneInput.value.trim()) {
+            phoneInput.classList.add('invalid');
+            isValid = false;
+        } else {
+            phoneInput.classList.remove('invalid');
+        }
+        if (!emailInput.value.trim()) {
+            emailInput.classList.add('invalid');
+            isValid = false;
+        } else {
+            emailInput.classList.remove('invalid');
+        }
 
-            Here's the information to use to populate the resume:
+        if (!isValid) {
+            showError("Please fill in all required fields.", errorMessagePage1);
+            return;
+        }
 
-            `;
+        hideError(errorMessagePage1);
+        page1.classList.remove('active');
+        page2.classList.add('active');
+    });
 
-            if (name) geminiPrompt += `\nName: ${name}`;
-            if (address) geminiPrompt += `\nAddress: ${address}`;
-            if (phone) geminiPrompt += `\nPhone: ${phone}`;
-            if (email) geminiPrompt += `\nEmail: ${email}`;
-            if (linkedin) geminiPrompt += `\nLinkedIn: ${linkedin}`;
-            if (github) geminiPrompt += `\nGitHub: ${github}`;
-            geminiPrompt += `\nTarget Job Title: ${jobTitle}`;
-            geminiPrompt += `\nTarget Industry: ${industry}`;
-            geminiPrompt += `\nKey Skills: ${skills}`;
-            geminiPrompt += `\nRecent Job Experiences: ${experience}`;
-            if (achievement) {
-                geminiPrompt += `\nProfessional Achievement: ${achievement}`;
-            }
-            geminiPrompt += `\nEducation: ${education}`;
-            if (certifications) geminiPrompt += `\nCertifications/Training: ${certifications}`;
-                        geminiPrompt += `\nInclude Professional Summary?: ${summaryOption}`;
+    // --- Preview Button (Generates and Shows Preview) ---
+    previewButton.addEventListener('click', async () => {
+        // Validate required fields on Page 2
+        if (!jobTitleInput.value.trim() || !industryInput.value.trim() || !skillsInput.value.trim() || !experienceInput.value.trim() || !educationInput.value.trim()) {
+            showError("Please fill in all required fields on this page.", errorMessagePage2);
+            return; // Stop if validation fails
+        }
 
-            geminiPrompt += `\n\nOutput ONLY the resume content in plain text, using Markdown for basic formatting (headings, bullet points).  Do NOT include any introductory text, explanations, or HTML.`;
+        hideError(errorMessagePage2);
+        page2.classList.remove('active');
+        page3.classList.add('active');
+        loadingIndicator.classList.add('active'); // Show loading
 
-            console.log("Sending to Gemini:", geminiPrompt);
+        // --- Resume Generation (Gemini API call) ---
+        const name = nameInput.value.trim();
+        const address = addressInput.value.trim();
+        const phone = phoneInput.value.trim();
+        const email = emailInput.value.trim();
+        const linkedin = linkedinInput.value.trim();
+        const github = githubInput.value.trim();
+        const jobTitle = jobTitleInput.value.trim();
+        const industry = industryInput.value.trim();
+        const skills = skillsInput.value.trim();
+        const experience = experienceInput.value.trim();
+        const achievement = achievementInput.value.trim();
+        const education = educationInput.value.trim();
+        const certifications = certificationsInput.value.trim();
+        const summaryOption = summaryOptionSelect.value;
 
-            try {
-                const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: geminiPrompt
-                            }]
+        let geminiPrompt = `Create a modern and professional resume template with a clean, ATS-friendly layout. The color scheme should use neutral tones (white, gray, and navy blue) with subtle accent colors for highlights. The font should be a mix of bold sans-serif for headings and light serif for body text. Include sections for Profile Summary, Work Experience, Skills, Education, and Contact Information. Add icons for social media links and a small profile photo placeholder in the header for a sleek, polished look. Omit unnecessary symbols and use a single-column layout. Format the output for readability, using appropriate spacing and indentation. Ensure the resume is well-organized and easy to scan.
+
+        Here's the information to use to populate the resume:
+
+        `;
+
+        if (name) geminiPrompt += `\nName: ${name}`;
+        if (address) geminiPrompt += `\nAddress: ${address}`;
+        if (phone) geminiPrompt += `\nPhone: ${phone}`;
+        if (email) geminiPrompt += `\nEmail: ${email}`;
+        if (linkedin) geminiPrompt += `\nLinkedIn: ${linkedin}`;
+        if (github) geminiPrompt += `\nGitHub: ${github}`;
+             geminiPrompt += `\nTarget Job Title: ${jobTitle}`;
+        geminiPrompt += `\nTarget Industry: ${industry}`;
+        geminiPrompt += `\nKey Skills: ${skills}`;
+        geminiPrompt += `\nRecent Job Experiences: ${experience}`;
+        if (achievement) {
+            geminiPrompt += `\nProfessional Achievement: ${achievement}`;
+        }
+        geminiPrompt += `\nEducation: ${education}`;
+        if (certifications) geminiPrompt += `\nCertifications/Training: ${certifications}`;
+        geminiPrompt += `\nInclude Professional Summary?: ${summaryOption}`;
+
+        geminiPrompt += `\n\nOutput ONLY the resume content in plain text, using Markdown for basic formatting (headings, bullet points).  Do NOT include any introductory text, explanations, or HTML.`;
+
+        console.log("Sending to Gemini:", geminiPrompt);
+
+        try {
+            const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: geminiPrompt
                         }]
-                    })
-                });
-
-                console.log("Gemini Response Status:", geminiResponse.status);
-
-                if (!geminiResponse.ok) {
-                    const geminiErrorText = await geminiResponse.text();
-                    throw new Error(`Gemini API Error: ${geminiResponse.status} - ${geminiErrorText}`);
-                }
-
-                const geminiData = await geminiResponse.json();
-                console.log("Gemini Response:", geminiData);
-
-                if (geminiData.candidates && geminiData.candidates.length > 0 && geminiData.candidates[0].content && geminiData.candidates[0].content.parts && geminiData.candidates[0].content.parts.length > 0) {
-                    const geminiText = geminiData.candidates[0].content.parts[0].text;
-
-                    // Format and display resume *only in the preview*
-                    const formattedResume = formatResumeText(geminiText);
-                    resumePreviewDiv.innerHTML = formattedResume;
-                    resultContainer.style.display = "block"; // Show results
-                    resumeEditorDiv.style.display = 'none';   // Hide editor initially
-                    downloadButton.style.display = 'none';   // Hide download initially
-                    editButton.style.display = 'block';      // Show edit button
-
-                } else {
-                    throw new Error("Gemini API returned an unexpected response structure.");
-                }
-
-            } catch (error) {
-                showError(error.message, errorMessagePage2); // Show errors on page 2
-                console.error("Error:", error);
-                page2.classList.add('active');  // Stay on page 2 if error
-                page3.classList.remove('active');
-            } finally {
-                loadingIndicator.classList.remove('active'); // Always hide
-            }
-        });
-
-        // --- Edit Button:  Show Editor, Hide Preview ---
-        editButton.addEventListener('click', () => {
-            // Copy *preview* content to editor
-            resumeEditorDiv.innerHTML = resumePreviewDiv.innerHTML;
-            resumeEditorDiv.style.display = 'block'; // Show the editor
-            downloadButton.style.display = 'inline-block'; // Show download button
-            editButton.style.display = 'none'; // Hide the edit button
-        });
-
-
-        // --- Toolbar Event Listeners ---
-        fontFamilyButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            fontFamilySelect.classList.toggle('active');
-            fontSizeSelect.classList.remove('active');
-            headingsSelect.classList.remove('active');
-            textAlignSelect.classList.remove('active');
-        });
-
-        fontFamilySelect.addEventListener('change', () => {
-            document.execCommand('fontName', false, fontFamilySelect.value);
-            fontFamilySelect.classList.remove('active'); // Hide after selection
-        });
-
-        fontSizeButton.addEventListener('click', (e) => {
-          e.stopPropagation();
-          fontSizeSelect.classList.toggle('active');
-          fontFamilySelect.classList.remove('active');
-          headingsSelect.classList.remove('active');
-          textAlignSelect.classList.remove('active');
-        });
-        fontSizeSelect.addEventListener('change', () => {
-           applyFontSize(fontSizeSelect.value);
-           fontSizeSelect.classList.remove('active');
-        });
-
-        //Helper function to change font size
-        function applyFontSize(size) {
-            const selection = window.getSelection();
-            if (selection.rangeCount > 0) {
-                const range = selection.getRangeAt(0);
-                const span = document.createElement('span');
-                span.style.fontSize = size;
-                range.surroundContents(span);
-            }
-        }
-
-        headingsButton.addEventListener('click', (e) => {
-          e.stopPropagation();
-          headingsSelect.classList.toggle('active');
-          fontFamilySelect.classList.remove('active');
-          fontSizeSelect.classList.remove('active');
-          textAlignSelect.classList.remove('active');
-        });
-        headingsSelect.addEventListener('change', () => {
-             document.execCommand('formatBlock', false, `<${headingsSelect.value}>`);
-             headingsSelect.classList.remove('active');
-        });
-
-        boldButton.addEventListener('click', () => {
-            document.execCommand('bold', false, null);
-            updateButtonState();
-        });
-
-        italicButton.addEventListener('click', () => {
-            document.execCommand('italic', false, null);
-            updateButtonState();
-        });
-
-        underlineButton.addEventListener('click', () => {
-            document.execCommand('underline', false, null);
-            updateButtonState();
-        });
-
-        strikethroughButton.addEventListener('click', () => {
-            document.execCommand('strikeThrough', false, null);
-             updateButtonState();
-        });
-        uppercaseButton.addEventListener('click', () => {
-            const selection = window.getSelection();
-            if (selection.rangeCount > 0) {
-                const range = selection.getRangeAt(0);
-                const selectedText = range.toString();
-
-                if (selectedText) {
-                    const newNode = document.createTextNode(selectedText.toUpperCase());
-                    range.deleteContents();
-                    range.insertNode(newNode);
-                }
-            }
-             updateButtonState();
-        });
-        textAlignButton.addEventListener('click', (e) => {
-          e.stopPropagation();
-          textAlignSelect.classList.toggle('active');
-           fontFamilySelect.classList.remove('active');
-          fontSizeSelect.classList.remove('active');
-          headingsSelect.classList.remove('active');
-        });
-        textAlignSelect.addEventListener('change', () => {
-            document.execCommand('justify' + textAlignSelect.value.charAt(0).toUpperCase() + textAlignSelect.value.slice(1), false, null);
-             textAlignSelect.classList.remove('active'); //hides after used
-        });
-
-        listButton.addEventListener('click', () => {
-            document.execCommand('insertUnorderedList', false, null);
-        });
-
-        numberListButton.addEventListener('click', () => {
-            document.execCommand('insertOrderedList', false, null);
-        });
-        //text color
-        textColorButton.addEventListener('click', (e) => {
-          e.stopPropagation();
-          textColorPicker.classList.toggle('active');
-          backgroundColorPicker.classList.remove('active');
-        });
-        textColorPicker.addEventListener('change', () => {
-            document.execCommand('foreColor', false, textColorPicker.value);
-             textColorPicker.classList.remove('active');
-        });
-
-        // background color
-        backgroundColorButton.addEventListener('click', (e) => {
-          e.stopPropagation();
-          backgroundColorPicker.classList.toggle('active');
-          textColorPicker.classList.remove('active');
-        });
-        backgroundColorPicker.addEventListener('change', () => {
-            document.execCommand('backColor', false, backgroundColorPicker.value);
-            backgroundColorPicker.classList.remove('active'); // Hide after selecting
-
-        });
-
-        // Function to update the button states (bold, italic, underline, etc.)
-        function updateButtonState() {
-            boldButton.classList.toggle('active', document.queryCommandState('bold'));
-            italicButton.classList.toggle('active', document.queryCommandState('italic'));
-            underlineButton.classList.toggle('active', document.queryCommandState('underline'));
-            strikethroughButton.classList.toggle('active', document.queryCommandState('strikeThrough'));
-        }
-
-        // Update button states when selection changes
-        resumeEditorDiv.addEventListener('mouseup', updateButtonState);
-        resumeEditorDiv.addEventListener('keyup', updateButtonState);
-
-        // --- Download Button (jsPDF) ---
-        downloadButton.addEventListener('click', () => {
-            const editedResumeHTML = resumeEditorDiv.innerHTML;
-
-            if (typeof jsPDF === 'undefined') {
-                alert("jsPDF library not found. Please include jsPDF in your HTML.");
-                return;
-            }
-
-            const doc = new jsPDF({
-                orientation: 'p',
-                unit: 'mm',
-                format: 'a4',
-                putOnlyUsedFonts: true,
-                floatPrecision: 16
+                    }]
+                })
             });
 
-            const resumeText = editedResumeHTML.replace(/<br\s*\/?>/gi, '\n')
-                .replace(/<\/p>/gi, '\n\n')
-                .replace(/<\/h\d>/gi, '\n\n')
-                .replace(/<\/li>/gi, '\n')
-                .replace(/<[^>]+>/g, '')  // Remove all tags
-                .replace(/ /g, ' ')
-                .replace(/&/g, '&')
-                .replace(/</g, '<')
-                .replace(/>/g, '>')
-                .replace(/"/g, '"')
-                .replace(/'/g, "'");
+            console.log("Gemini Response Status:", geminiResponse.status);
 
+            if (!geminiResponse.ok) {
+                const geminiErrorText = await geminiResponse.text();
+                throw new Error(`Gemini API Error: ${geminiResponse.status} - ${geminiErrorText}`);
+            }
+
+            const geminiData = await geminiResponse.json();
+            console.log("Gemini Response:", geminiData);
+
+            if (geminiData.candidates && geminiData.candidates.length > 0 && geminiData.candidates[0].content && geminiData.candidates[0].content.parts && geminiData.candidates[0].content.parts.length > 0) {
+                const geminiText = geminiData.candidates[0].content.parts[0].text;
+
+                // Format and display resume *only in the preview*
+                const formattedResume = formatResumeText(geminiText);
+                resumePreviewDiv.innerHTML = formattedResume;
+                resultContainer.style.display = "block"; // Show results
+                resumeEditorDiv.style.display = 'none';   // Hide editor initially
+                downloadButton.style.display = 'none';   // Hide download initially
+                editButton.style.display = 'block';      // Show edit button
+
+            } else {
+                throw new Error("Gemini API returned an unexpected response structure.");
+            }
+
+        } catch (error) {
+            showError(error.message, errorMessagePage2); // Show errors on page 2
+            console.error("Error:", error);
+            page2.classList.add('active');  // Stay on page 2 if error
+            page3.classList.remove('active');
+        } finally {
+            loadingIndicator.classList.remove('active'); // Always hide
+        }
+    });
+
+    // --- Edit Button:  Show Editor, Hide Preview ---
+    editButton.addEventListener('click', () => {
+        // Copy *preview* content to editor
+        resumeEditorDiv.innerHTML = resumePreviewDiv.innerHTML;
+        resumeEditorDiv.style.display = 'block'; // Show the editor
+        downloadButton.style.display = 'inline-block'; // Show download button
+        editButton.style.display = 'none'; // Hide the edit button
+    });
+
+
+    // --- Toolbar Event Listeners ---
+    fontFamilyButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fontFamilySelect.classList.toggle('active');
+        fontSizeSelect.classList.remove('active');
+        headingsSelect.classList.remove('active');
+        textAlignSelect.classList.remove('active');
+    });
+
+    fontFamilySelect.addEventListener('change', () => {
+        document.execCommand('fontName', false, fontFamilySelect.value);
+        fontFamilySelect.classList.remove('active'); // Hide after selection
+    });
+
+    fontSizeButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fontSizeSelect.classList.toggle('active');
+      fontFamilySelect.classList.remove('active');
+      headingsSelect.classList.remove('active');
+      textAlignSelect.classList.remove('active');
+    });
+    fontSizeSelect.addEventListener('change', () => {
+       applyFontSize(fontSizeSelect.value);
+       fontSizeSelect.classList.remove('active');
+    });
+
+    //Helper function to change font size
+    function applyFontSize(size) {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            const span = document.createElement('span');
+            span.style.fontSize = size;
+            range.surroundContents(span);
+        }
+    }
+
+    headingsButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      headingsSelect.classList.toggle('active');
+      fontFamilySelect.classList.remove('active');
+      fontSizeSelect.classList.remove('active');
+      textAlignSelect.classList.remove('active');
+    });
+    headingsSelect.addEventListener('change', () => {
+         document.execCommand('formatBlock', false, `<${headingsSelect.value}>`);
+         headingsSelect.classList.remove('active');
+    });
+
+    boldButton.addEventListener('click', () => {
+        document.execCommand('bold', false, null);
+        updateButtonState();
+    });
+
+    italicButton.addEventListener('click', () => {
+        document.execCommand('italic', false, null);
+        updateButtonState();
+    });
+
+    underlineButton.addEventListener('click', () => {
+        document.execCommand('underline', false, null);
+        updateButtonState();
+    });
+
+    strikethroughButton.addEventListener('click', () => {
+        document.execCommand('strikeThrough', false, null);
+         updateButtonState();
+    });
+    uppercaseButton.addEventListener('click', () => {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            const selectedText = range.toString();
+
+            if (selectedText) {
+                const newNode = document.createTextNode(selectedText.toUpperCase());
+                range.deleteContents();
+                range.insertNode(newNode);
+            }
+        }
+         updateButtonState();
+    });
+    textAlignButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      textAlignSelect.classList.toggle('active');
+       fontFamilySelect.classList.remove('active');
+      fontSizeSelect.classList.remove('active');
+      headingsSelect.classList.remove('active');
+    });
+    textAlignSelect.addEventListener('change', () => {
+        document.execCommand('justify' + textAlignSelect.value.charAt(0).toUpperCase() + textAlignSelect.value.slice(1), false, null);
+         textAlignSelect.classList.remove('active'); //hides after used
+    });
+
+    listButton.addEventListener('click', () => {
+        document.execCommand('insertUnorderedList', false, null);
+    });
+
+    numberListButton.addEventListener('click', () => {
+        document.execCommand('insertOrderedList', false, null);
+    });
+    //text color
+    textColorButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      textColorPicker.classList.toggle('active');
+      backgroundColorPicker.classList.remove('active');
+    });
+    textColorPicker.addEventListener('change', () => {
+        document.execCommand('foreColor', false, textColorPicker.value);
+         textColorPicker.classList.remove('active');
+    });
+
+    // background color
+    backgroundColorButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      backgroundColorPicker.classList.toggle('active');
+      textColorPicker.classList.remove('active');
+    });
+    backgroundColorPicker.addEventListener('change', () => {
+        document.execCommand('backColor', false, backgroundColorPicker.value);
+        backgroundColorPicker.classList.remove('active'); // Hide after selecting
+
+    });
+
+    // Function to update the button states (bold, italic, underline, etc.)
+    function updateButtonState() {
+        boldButton.classList.toggle('active', document.queryCommandState('bold'));
+        italicButton.classList.toggle('active', document.queryCommandState('italic'));
+        underlineButton.classList.toggle('active', document.queryCommandState('underline'));
+        strikethroughButton.classList.toggle('active', document.queryCommandState('strikeThrough'));
+    }
+
+    // Update button states when selection changes
+    resumeEditorDiv.addEventListener('mouseup', updateButtonState);
+    resumeEditorDiv.addEventListener('keyup', updateButtonState);
+
+    // --- Download Button (jsPDF) ---
+    downloadButton.addEventListener('click', () => {
+        const editedResumeHTML = resumeEditorDiv.innerHTML;
+
+        if (typeof jsPDF === 'undefined') {
+            alert("jsPDF library not found. Please include jsPDF in your HTML.");
+            return;
+        }
+
+        const doc = new jsPDF({
+            orientation: 'p',
+            unit: 'mm',
+            format: 'a4',
+        });
+
+        // Helper function to add styled text
+        function addStyledText(text, options) {
+            const { fontSize = 12, fontWeight = 'normal', fontStyle = 'normal', color = '#000000', x, y, align = 'left'} = options;
+            doc.setFontSize(fontSize);
+            doc.setFont('helvetica', fontWeight, fontStyle);  // Use helvetica
+            doc.setTextColor(color);
+            doc.text(text, x, y, { align: align });
+        }
+
+        // Convert HTML to a structured format
+        const resumeData = parseResumeHTML(editedResumeHTML);
+
+
+         // --- PDF Generation with Styling and Layout ---
+        let yOffset = 15;  // Start position
+
+          // Add Contact Information
+        if (resumeData.contact) {
+          const contact = resumeData.contact;
+          // Profile Photo Placeholder (optional, if you have image handling)
+          // doc.setFillColor('#cccccc'); // Gray fill
+          // doc.circle(20, yOffset + 10, 10, 'F'); // Draw circle (x, y, radius, style)
+
+          addStyledText(`${contact.name}`, { fontSize: 20, fontWeight: 'bold', x: 20, y: yOffset });
+          yOffset += 8;
+
+          addStyledText(`${contact.address}`, {fontSize: 12, x: 20, y: yOffset});
+          yOffset += 6;
+
+          addStyledText(`${contact.phone}`, {fontSize: 12, x: 20, y: yOffset});
+          yOffset += 6;
+          addStyledText(`${contact.email}`, {fontSize: 12, x: 20, y: yOffset});
+          yOffset += 6;
+
+          if(contact.linkedin){
+            addStyledText(`${contact.linkedin}`, {fontSize: 12, x: 20, y: yOffset});
+          yOffset += 6;
+          }
+           if(contact.github){
+            addStyledText(`${contact.github}`, {fontSize: 12, x: 20, y: yOffset});
+          yOffset += 8;
+          }
+
+        }
+         // Add a horizontal line
+         doc.setLineWidth(0.5);
+         doc.setDrawColor('#00a2ff'); // blue color for lines
+         doc.line(20, yOffset, 190, yOffset);
+         yOffset += 5;
+
+
+        // Add Summary (if exists)
+        if (resumeData.summary) {
+           addStyledText('Summary', { fontSize: 16, fontWeight: 'bold', color: '#00a2ff', x: 20, y: yOffset });
+            yOffset += 8;
             doc.setFontSize(12);
-            doc.setFont('Arial', 'normal'); // Use a standard font
-
-            const splitText = doc.splitTextToSize(resumeText, 180); // Wrap text
-            doc.text(splitText, 15, 20); // Add text with margins
-
-            doc.save('resume.pdf');
-        });
-
-        //Close the color picker and the dropdown selections when the user clicks outside of it
-        document.addEventListener('click', (e) => {
-          if (!fontFamilySelect.contains(e.target) && !fontFamilyButton.contains(e.target)) {
-            fontFamilySelect.classList.remove('active');
-          }
-          if(!fontSizeSelect.contains(e.target) && !fontSizeButton.contains(e.target)){
-            fontSizeSelect.classList.remove('active');
-          }
-           if(!textAlignSelect.contains(e.target) && !textAlignButton.contains(e.target)){
-            textAlignSelect.classList.remove('active');
-          }
-           if(!headingsSelect.contains(e.target) && !headingsButton.contains(e.target)){
-            headingsSelect.classList.remove('active');
-          }
-          if(!textColorPicker.contains(e.target) && !textColorButton.contains(e.target)){
-            textColorPicker.classList.remove('active');
-          }
-           if(!backgroundColorPicker.contains(e.target) && !backgroundColorButton.contains(e.target)){
-            backgroundColorPicker.classList.remove('active');
-          }
-        });
-
-        function showError(message, errorDiv) {
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
+            doc.setTextColor('#000000');
+            const summaryLines = doc.splitTextToSize(resumeData.summary, 170); // Wrap long lines
+            doc.text(summaryLines, 20, yOffset);
+            yOffset += summaryLines.length * (doc.getLineHeight() / doc.internal.scaleFactor) + 5; //dynamic spacing
         }
 
-        function hideError(errorDiv) {
-            errorDiv.style.display = 'none';
+
+        // Add Skills
+        if (resumeData.skills && resumeData.skills.length > 0) {
+           addStyledText('Skills', { fontSize: 16, fontWeight: 'bold', color: '#00a2ff', x: 20, y: yOffset });
+            yOffset += 8;
+
+            resumeData.skills.forEach(skill => {
+               addStyledText(`• ${skill}`, {fontSize: 12, x: 20, y: yOffset});
+                yOffset += 6;
+            });
+             yOffset += 4; // Add some extra space after skills
         }
 
-        // createElement function (same as before)
-        function createElement(tag, options = {}) {
-            const element = document.createElement(tag);
-            const { textContent = '', className = '', attributes = {}, children = [] } = options;
+         // Add a horizontal line
+         doc.setLineWidth(0.5);
+         doc.setDrawColor('#00a2ff'); // blue color for lines
+         doc.line(20, yOffset, 190, yOffset);
+         yOffset += 5;
 
-            if (textContent) {
-                element.textContent = textContent;
-            }
-            if (className) {
-                element.className = className;
-            }
-            for (const key in attributes) {
-                element.setAttribute(key, attributes[key]);
-            }
-            children.forEach(child => element.appendChild(child));
-            return element;
+        // Add Experience
+        if (resumeData.experience && resumeData.experience.length > 0) {
+            addStyledText('Experience', { fontSize: 16, fontWeight: 'bold', color: '#00a2ff', x: 20, y: yOffset });
+            yOffset += 8;
+
+            resumeData.experience.forEach(job => {
+                addStyledText(job.title, { fontSize: 14, fontWeight: 'bold', x: 20, y: yOffset });
+                yOffset += 7;
+                addStyledText(job.company, { fontSize: 12, fontStyle: 'italic', x: 20, y: yOffset });
+                yOffset += 6;
+                 addStyledText(job.dates, { fontSize: 12, fontStyle: 'italic', x: 20, y: yOffset });
+                yOffset += 6;
+                if (job.responsibilities) {
+                    job.responsibilities.forEach(resp => {
+                       addStyledText(`• ${resp}`, {fontSize: 12, x: 25, y: yOffset}); // Indent bullets
+                        yOffset += 6;
+                    });
+                }
+                yOffset += 5; // Extra space between job entries
+            });
         }
 
-        function formatResumeText(text) {
-            let formattedText = '';
+         // Add a horizontal line
+         doc.setLineWidth(0.5);
+         doc.setDrawColor('#00a2ff'); // blue color for lines
+         doc.line(20, yOffset, 190, yOffset);
+         yOffset += 5;
 
-           const sections = text.split(/\n(?=\s*(?:Summary|Experience|Skills|Education|Certifications|Contact)\s*:?\s*$)/mi);
+        // Add Education
+        if (resumeData.education) {
+            addStyledText('Education', { fontSize: 16, fontWeight: 'bold', color: '#00a2ff', x: 20, y: yOffset });
+            yOffset += 8;
+            const educationLines = doc.splitTextToSize(resumeData.education, 170);
+            doc.text(educationLines, 20, yOffset);
 
-            sections.forEach(section => {
-                const sectionDiv = createElement('div', { className: 'section' });
+            yOffset += educationLines.length * (doc.getLineHeight()/doc.internal.scaleFactor) + 5;
 
-                if (/Contact/i.test(section)) {
-                    const contactDiv = createElement('div', { className: 'contact-info' });
-                    const profilePhoto = createElement('div', { className: 'profile-photo', textContent: 'Photo' });
-                    contactDiv.appendChild(profilePhoto);
+        }
+        // Add Certifications (if exists, similar to skills)
+          if (resumeData.certifications && resumeData.certifications.length > 0) {
+           addStyledText('Certifications', { fontSize: 16, fontWeight: 'bold', color: '#00a2ff', x: 20, y: yOffset });
+            yOffset += 8;
 
-                   const contactDetails = createElement('div', { className: 'contact-details' });
-                    const contactLines = section.replace(/Contact:?/i, '').trim().split('\n');
+            resumeData.certifications.forEach(certification => {
+               addStyledText(`• ${certification}`, {fontSize: 12, x: 20, y: yOffset});
+                yOffset += 6;
+            });
 
-                    contactLines.forEach(line => {
-                        const trimmedLine = line.trim();
-                        if (!trimmedLine) return;
+        }
 
-                        const linkedInMatch = trimmedLine.match(/(https?:\/\/(?:www\.)?linkedin\.com\/[^\s]+)/);
-                        const githubMatch = trimmedLine.match(/(https?:\/\/(?:www\.)?github\.com\/[^\s]+)/);
-                        const emailMatch = trimmedLine.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
-                        const phoneMatch = trimmedLine.match(/(\+?\d[\d\s-()]*)/); // More robust phone regex
+        doc.save('resume.pdf');
+    });
 
-                        if (linkedInMatch) {
-                            const link = createElement('a', { textContent: 'LinkedIn', attributes: { href: linkedInMatch[1], target: '_blank' } });
-                            const icon = createElement('i', { className: 'fab fa-linkedin' });
-                            const p = createElement('p');
-                            p.appendChild(icon);
-                            p.appendChild(document.createTextNode(' '));
-                            p.appendChild(link);
-                            contactDetails.appendChild(p);
+    //Close the color picker and the dropdown selections when the user clicks outside of it
+    document.addEventListener('click', (e) => {
+      if (!fontFamilySelect.contains(e.target) && !fontFamilyButton.contains(e.target)) {
+        fontFamilySelect.classList.remove('active');
+      }
+      if(!fontSizeSelect.contains(e.target) && !fontSizeButton.contains(e.target)){
+        fontSizeSelect.classList.remove('active');
+      }
+       if(!textAlignSelect.contains(e.target) && !textAlignButton.contains(e.target)){
+        textAlignSelect.classList.remove('active');
+      }
+       if(!headingsSelect.contains(e.target) && !headingsButton.contains(e.target)){
+        headingsSelect.classList.remove('active');
+      }
+      if(!textColorPicker.contains(e.target) && !textColorButton.contains(e.target)){
+        textColorPicker.classList.remove('active');
+      }
+       if(!backgroundColorPicker.contains(e.target) && !backgroundColorButton.contains(e.target)){
+        backgroundColorPicker.classList.remove('active');
+      }
+    });
 
-                        } else if (githubMatch) {
-                            const link = createElement('a', { textContent: 'GitHub', attributes: { href: githubMatch[1], target: '_blank' } });
-                            const icon = createElement('i', { className: 'fab fa-github' });
-                            const p = createElement('p');
-                            p.appendChild(icon);
-                            p.appendChild(document.createTextNode(' '));
-                            p.appendChild(link);
-                            contactDetails.appendChild(p);
-                        } else if (emailMatch) {
-                            // Make email clickable
-                            const link = createElement('a', { textContent: trimmedLine, attributes: { href: `mailto:${trimmedLine}` } });
-                            const p = createElement('p');
-                            p.appendChild(link);
-                            contactDetails.appendChild(p);
+    function showError(message, errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+    }
+
+    function hideError(errorDiv) {
+        errorDiv.style.display = 'none';
+    }
+
+      // Improved HTML Parsing Function
+        function parseResumeHTML(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const resumeData = {};
+
+            // Extract Contact Information
+            const contactInfo = doc.querySelector('.contact-info');
+            if (contactInfo) {
+                resumeData.contact = {};
+                const name = contactInfo.querySelector('h3')?.textContent.trim();
+                resumeData.contact.name = name;
+
+                // Use querySelectorAll and iterate
+                const contactDetails = contactInfo.querySelectorAll('.contact-details p');
+                contactDetails.forEach(p => {
+                    const text = p.textContent.trim();
+                    if (text.includes('@')) { // Simple email check
+                      resumeData.contact.email = text;
+                    }
+                    //Check for phone by looking for digits
+                    else if(/\d/.test(text)){
+                      resumeData.contact.phone = text;
+                    }
+                    //Check for linkedin
+                    else if(/linkedin/i.test(text)){
+                        resumeData.contact.linkedin = text;
+                    }
+                    //Check for github
+                    else if(/github/i.test(text)){
+                      resumeData.contact.github = text;
+                    }
+                    else{
+                      resumeData.contact.address = text;
+                    }
+                });
+            }
+
+            // Extract Summary
+              const summarySection = doc.querySelector('.section:has(h2)'); // Select the section
+                if (summarySection) {
+                  const h2Text = summarySection.querySelector('h2')?.textContent.trim().toLowerCase();
+                  if(h2Text === 'summary'){
+                     const paragraphs = Array.from(summarySection.querySelectorAll('p')).map(p => p.textContent.trim()).join('\n');
+                    resumeData.summary = paragraphs;
+                  }
+
+                }
+
+
+            // Extract Skills
+           const skillsSection = doc.querySelector('.section:has(>h2)');
+            if(skillsSection){
+                const h2Text = skillsSection.querySelector('h2')?.textContent.trim().toLowerCase();
+               if(h2Text === 'skills'){
+                const skillsList = skillsSection.querySelector('ul');
+                if (skillsList) {
+                    resumeData.skills = Array.from(skillsList.querySelectorAll('li')).map(li => li.textContent.trim());
+                }
+              }
+            }
+
+            // Extract Experience
+            const experienceSections = doc.querySelectorAll('.section:has(>h2)');
+              experienceSections.forEach(experienceSection => {
+                const h2Text = experienceSection.querySelector('h2')?.textContent.trim().toLowerCase();
+                 if(h2Text === 'experience'){
+                    if (!resumeData.experience) {
+                      resumeData.experience = [];
+                    }
+                    const jobEntries = experienceSection.querySelectorAll('.job-title');
+                    jobEntries.forEach(jobEntry => {
+                      const job = {};
+                      job.title = jobEntry.textContent.trim();
+                      job.company = jobEntry.nextElementSibling?.classList.contains('company-name') ? jobEntry.nextElementSibling.textContent.trim() : '';
+                       job.dates = jobEntry.nextElementSibling?.classList.contains('job-dates') ? jobEntry.nextElementSibling.textContent.trim() : '';
+                        //find the dates element
+                        let nextSibling = jobEntry.nextElementSibling;
+                        while(nextSibling && !nextSibling.classList.contains('job-dates')){
+                          nextSibling = nextSibling.nextElementSibling;
                         }
-                        else if (phoneMatch) {
-                            // Make phone number clickable
-                          const link = createElement('a', { textContent: trimmedLine, attributes: { href: `tel:${trimmedLine.replace(/[^0-9+]/g, '')}` } });
-                          const p = createElement('p');
-                          p.appendChild(link);
-                          contactDetails.appendChild(p);
+                        if(nextSibling){
+                          job.dates = nextSibling.textContent.trim();
                         }
-                        else {
-                            const p = createElement('p', { textContent: trimmedLine });
-                            contactDetails.appendChild(p);
-                        }
+                      const responsibilitiesList = jobEntry.parentElement.querySelector('ul');
+                        if (responsibilitiesList) {
+                          job.responsibilities = Array.from(responsibilitiesList.querySelectorAll('li')).map(li => li.textContent.trim());
+                      }
+                      resumeData.experience.push(job);
+                  });
+                 }
+              });
+
+            // Extract Education
+           const educationSection = doc.querySelector('.section:has(>h2)');
+            if (educationSection) {
+              const h2Text = educationSection.querySelector('h2')?.textContent.trim().toLowerCase();
+              if(h2Text === 'education'){
+                const educationText = Array.from(educationSection.querySelectorAll('p')).map(p => p.textContent.trim()).join('\n');
+                resumeData.education = educationText;
+              }
+
+            }
+            // Extract Certifications
+             const certificationsSection = doc.querySelector('.section:has(>h2)');
+            if(certificationsSection){
+              const h2Text = certificationsSection.querySelector('h2')?.textContent.trim().toLowerCase();
+               if(h2Text === 'certifications'){
+                const certificationsList = certificationsSection.querySelector('ul');
+                if (certificationsList) {
+                  resumeData.certifications = Array.from(certificationsList.querySelectorAll('li')).map(li => li.textContent.trim());
+                }
+              }
+            }
+
+            return resumeData;
+        }
+
+    // createElement function
+    function createElement(tag, options = {}) {
+        const element = document.createElement(tag);
+        const { textContent = '', className = '', attributes = {}, children = [] } = options;
+
+        if (textContent) {
+            element.textContent = textContent;
+        }
+        if (className) {
+            element.className = className;
+        }
+        for (const key in attributes) {
+            element.setAttribute(key, attributes[key]);
+        }
+        children.forEach(child => element.appendChild(child));
+        return element;
+    }
+
+    function formatResumeText(text) {
+        let formattedText = '';
+
+        const sections = text.split(/\n(?=\s*(?:Summary|Experience|Skills|Education|Certifications|Contact)\s*:?\s*$)/mi);
+
+        sections.forEach(section => {
+            const sectionDiv = createElement('div', { className: 'section' });
+
+            if (/Contact/i.test(section)) {
+                const contactDiv = createElement('div', { className: 'contact-info' });
+                const profilePhoto = createElement('div', { className: 'profile-photo', textContent: 'Photo' });
+                contactDiv.appendChild(profilePhoto);
+
+                const contactDetails = createElement('div', { className: 'contact-details' });
+                const contactLines = section.replace(/Contact:?/i, '').trim().split('\n');
+
+                contactLines.forEach(line => {
+                    const trimmedLine = line.trim();
+                    if (!trimmedLine) return;
+
+                    const linkedInMatch = trimmedLine.match(/(https?:\/\/(?:www\.)?linkedin\.com\/[^\s]+)/);
+                    const githubMatch = trimmedLine.match(/(https?:\/\/(?:www\.)?github\.com\/[^\s]+)/);
+                    const emailMatch = trimmedLine.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+                    const phoneMatch = trimmedLine.match(/(\+?\d[\d\s-()]*)/); // More robust phone regex
+                    const nameMatch = trimmedLine.match(/^(.*?)(?:,\s*(?:Address|Phone|Email|LinkedIn|GitHub))?\s*$/);
+
+                   if (nameMatch && !linkedInMatch && !githubMatch && !emailMatch && !phoneMatch) {
+                        const h3 = createElement('h3', { textContent: nameMatch[1].trim()});
+                        contactDetails.appendChild(h3);
+                   }
+                    else if (linkedInMatch) {
+                        const link = createElement('a', { textContent: 'LinkedIn', attributes: { href: linkedInMatch[1], target: '_blank' } });
+                        const icon = createElement('i', { className: 'fab fa-linkedin' });
+                        const p = createElement('p');
+                        p.appendChild(icon);
+                        p.appendChild(document.createTextNode(' '));
+                        p.appendChild(link);
+                        contactDetails.appendChild(p);
+
+                    } else if (githubMatch) {
+                        const link = createElement('a', { textContent: 'GitHub', attributes: { href: githubMatch[1], target: '_blank' } });
+                        const icon = createElement('i', { className: 'fab fa-github' });
+                        const p = createElement('p');
+                        p.appendChild(icon);
+                        p.appendChild(document.createTextNode(' '));
+                        p.appendChild(link);
+                        contactDetails.appendChild(p);
+                    } else if (emailMatch) {
+                        // Make email clickable
+                        const link = createElement('a', { textContent: trimmedLine, attributes: { href: `mailto:${trimmedLine}` } });
+                        const p = createElement('p');
+                        p.appendChild(link);
+                        contactDetails.appendChild(p);
+                    }
+                    else if (phoneMatch) {
+                        // Make phone number clickable
+                      const link = createElement('a', { textContent: trimmedLine, attributes: { href: `tel:${trimmedLine.replace(/[^0-9+]/g, '')}` } });
+                      const p = createElement('p');
+                      p.appendChild(link);
+                      contactDetails.appendChild(p);
+                    }
+                    else {
+                        const p = createElement('p', { textContent: trimmedLine });
+                        contactDetails.appendChild(p);
+                    }
+                });
+
+                contactDiv.appendChild(contactDetails);
+                sectionDiv.appendChild(contactDiv);
+
+            } else if (/Summary/i.test(section)) {
+                const summaryHeading = createElement('h2', { textContent: 'Summary' });
+                sectionDiv.appendChild(summaryHeading);
+                const summaryContent = section.replace(/Summary:?/i, '').trim();
+
+                const summaryLines = summaryContent.split('\n');
+                summaryLines.forEach(line => {
+                    const trimmedLine = line.trim();
+                    if (!trimmedLine) return;
+
+                    let formattedLine = trimmedLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');  // Bold
+                    formattedLine = formattedLine.replace(/^\s*[-•]\s*(.+)/, (match, content) => {
+                        return `• ${content}`;  // Keep bullet
                     });
 
-                    contactDiv.appendChild(contactDetails);
-                    sectionDiv.appendChild(contactDiv);
+                    const p = createElement('p', { textContent: '' }); // Don't set textContent directly
+                    p.innerHTML = formattedLine;  // Use innerHTML for <strong>
+                    sectionDiv.appendChild(p);
+                });
 
-                } else if (/Summary/i.test(section)) {
-                    const summaryHeading = createElement('h2', { textContent: 'Summary' });
-                    sectionDiv.appendChild(summaryHeading);
-                    const summaryContent = section.replace(/Summary:?/i, '').trim();
-
-                    const summaryLines = summaryContent.split('\n');
-                    summaryLines.forEach(line => {
-                        const trimmedLine = line.trim();
-                        if (!trimmedLine) return;
-
-                        let formattedLine = trimmedLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');  // Bold
-                        formattedLine = formattedLine.replace(/^\s*[-•]\s*(.+)/, (match, content) => {
-                            return `• ${content}`;  // Keep bullet
-                        });
-
-                        const p = createElement('p', { textContent: '' }); // Don't set textContent directly
-                        p.innerHTML = formattedLine;  // Use innerHTML for <strong>
-                        sectionDiv.appendChild(p);
-                    });
-
-                } else if (/Skills/i.test(section)) {
-                    const skillsHeading = createElement('h2', { textContent: 'Skills' });
-                    sectionDiv.appendChild(skillsHeading);
-                    const skillsList = section.replace(/Skills:?/i, '').trim();
-                    const ul = createElement('ul');
-                    skillsList.split(/[,•]/).forEach(skill => {
-                        const trimmedSkill = skill.trim();
-                        if (trimmedSkill) {
-                            const li = createElement('li', { textContent: trimmedSkill });
-                            ul.appendChild(li);
-                        }
-                    });
-                    sectionDiv.appendChild(ul);
+            } else if (/Skills/i.test(section)) {
+                const skillsHeading = createElement('h2', { textContent: 'Skills' });
+                sectionDiv.appendChild(skillsHeading);
+                const skillsList = section.replace(/Skills:?/i, '').trim();
+                const ul = createElement('ul');
+                skillsList.split(/[,•]/).forEach(skill => {
+                    const trimmedSkill = skill.trim();
+                    if (trimmedSkill) {
+                        const li = createElement('li', { textContent: trimmedSkill });
+                        ul.appendChild(li);
+                    }
+                });
+                sectionDiv.appendChild(ul);
 
 
-                } else if (/Experience/i.test(section)) {
-                    const experienceHeading = createElement('h2', { textContent: 'Experience' });
-                    sectionDiv.appendChild(experienceHeading);
+            } else if (/Experience/i.test(section)) {
+                const experienceHeading = createElement('h2', { textContent: 'Experience' });
+                sectionDiv.appendChild(experienceHeading);
 
-                   const experiences = section.replace(/Experience:?/i, '').trim().split(/\n(?=\s*[-•]\s*[A-Za-z])/);  //Regex for splitting
-                   experiences.forEach(exp => {
-                       const jobDetails = exp.trim().split('\n');
-                       if (jobDetails.length > 0 && jobDetails[0].trim() !== '') {
-                            const jobTitleMatch = jobDetails[0].match(/^\s*[-•]\s*(.+)/);  //remove bullet point
-                            const jobTitle = jobTitleMatch ? jobTitleMatch[1].trim() : jobDetails[0].trim();
-                            const jobTitleElement = createElement('h3', { textContent: jobTitle, className: 'job-title' });
-                            sectionDiv.appendChild(jobTitleElement);
+               const experiences = section.replace(/Experience:?/i, '').trim().split(/\n(?=\s*[-•]\s*[A-Za-z])/);  //Regex for splitting
+               experiences.forEach(exp => {
+                   const jobDetails = exp.trim().split('\n');
+                   if (jobDetails.length > 0 && jobDetails[0].trim() !== '') {
+                        const jobTitleMatch = jobDetails[0].match(/^\s*[-•]\s*(.+)/);  //remove bullet point
+                        const jobTitle = jobTitleMatch ? jobTitleMatch[1].trim() : jobDetails[0].trim();
+                        const jobTitleElement = createElement('h3', { textContent: jobTitle, className: 'job-title' });
+                        sectionDiv.appendChild(jobTitleElement);
 
-                           if (jobDetails.length > 1) {
-                                const companyLine = jobDetails[1].trim();
-                                const companyElement = createElement('p', { textContent: companyLine, className: 'company-name' });
-                                sectionDiv.appendChild(companyElement);
+                       if (jobDetails.length > 1) {
+                            const companyLine = jobDetails[1].trim();
+                            const companyElement = createElement('p', { textContent: companyLine, className: 'company-name' });
+                            sectionDiv.appendChild(companyElement);
 
-                                // Extract job dates (if on a separate line)
-                                if (jobDetails.length > 2 && jobDetails[2].trim().match(/(\d{4})\s*-\s*(\d{4}|Present)/)) {
-                                    const dates = jobDetails[2].trim();
-                                     const datesElement = createElement('p', { textContent: dates, className: 'job-dates' });
-                                     sectionDiv.appendChild(datesElement);
+                            // Extract job dates (if on a separate line)
+                            if (jobDetails.length > 2 && jobDetails[2].trim().match(/(\d{4})\s*-\s*(\d{4}|Present)/)) {
+                                const dates = jobDetails[2].trim();
+                                 const datesElement = createElement('p', { textContent: dates, className: 'job-dates' });
+                                 sectionDiv.appendChild(datesElement);
 
-                                    // Create a UL for responsibilities starting from line 4
-                                    const ul = createElement('ul');
-                                        for (let i = 3; i < jobDetails.length; i++) {
-                                             let line = jobDetails[i].trim();
-                                              if (!line) continue; // Skip empty lines
+                                // Create a UL for responsibilities starting from line 4
+                                const ul = createElement('ul');
+                                    for (let i = 3; i < jobDetails.length; i++) {
+                                         let line = jobDetails[i].trim();
+                                          if (!line) continue; // Skip empty lines
 
-                                            // Handle bullet points and bolding within the responsibilities
-                                            line = line.replace(/^\s*[-•]\s*(.+)/, (match, content) => {
-                                                return `• ${content}`; // Keep bullet point
-                                            });
-                                            line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
-
-                                            const li = createElement('li'); // Create the <li>
-                                            li.innerHTML = line;       // Set innerHTML to render <strong>
-                                            ul.appendChild(li);
-                                        }
-                                        if(ul.hasChildNodes()){
-                                            sectionDiv.appendChild(ul);
-                                        }
-
-                                }else{
-                                     // Create a UL for responsibilities starting from line 3
-                                    const ul = createElement('ul');
-                                    for (let i = 2; i < jobDetails.length; i++) {
-                                        let line = jobDetails[i].trim();
-                                        if (!line) continue;
-
-                                        // Handle bullet points and bolding
+                                        // Handle bullet points and bolding within the responsibilities
                                         line = line.replace(/^\s*[-•]\s*(.+)/, (match, content) => {
-                                            return `• ${content}`;
+                                            return `• ${content}`; // Keep bullet point
                                         });
-                                        line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                                        line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
 
-                                        const li = createElement('li');
-                                        li.innerHTML = line;
+                                        const li = createElement('li'); // Create the <li>
+                                        li.innerHTML = line;       // Set innerHTML to render <strong>
                                         ul.appendChild(li);
                                     }
                                     if(ul.hasChildNodes()){
                                         sectionDiv.appendChild(ul);
                                     }
 
+                            }else{
+                                 // Create a UL for responsibilities starting from line 3
+                                const ul = createElement('ul');
+                                for (let i = 2; i < jobDetails.length; i++) {
+                                    let line = jobDetails[i].trim();
+                                    if (!line) continue;
+
+                                    // Handle bullet points and bolding
+                                    line = line.replace(/^\s*[-•]\s*(.+)/, (match, content) => {
+                                        return `• ${content}`;
+                                    });
+                                    line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+                                    const li = createElement('li');
+                                    li.innerHTML = line;
+                                    ul.appendChild(li);
                                 }
-                           }
+                                if(ul.hasChildNodes()){
+                                    sectionDiv.appendChild(ul);
+                                }
+
+                            }
                        }
+                   }
+                });
+
+            } else if (/Education/i.test(section)) {
+                const educationHeading = createElement('h2', { textContent: 'Education' });
+                sectionDiv.appendChild(educationHeading);
+               const educationText = section.replace(/Education:?/i, '').trim();
+                const educationLines = educationText.split('\n');
+                educationLines.forEach(line => {
+                    const trimmedLine = line.trim();
+                    if (!trimmedLine) return;
+
+                    let formattedLine = trimmedLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');  // Bold
+                    formattedLine = formattedLine.replace(/^\s*[-•]\s*(.+)/, (match, content) => {
+                        return `• ${content}`;  // Keep bullet
                     });
 
-                } else if (/Education/i.test(section)) {
-                    const educationHeading = createElement('h2', { textContent: 'Education' });
-                    sectionDiv.appendChild(educationHeading);
-                   const educationText = section.replace(/Education:?/i, '').trim();
-                    const educationLines = educationText.split('\n');
-                    educationLines.forEach(line => {
-                        const trimmedLine = line.trim();
-                        if (!trimmedLine) return;
-
-                        let formattedLine = trimmedLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');  // Bold
-                        formattedLine = formattedLine.replace(/^\s*[-•]\s*(.+)/, (match, content) => {
-                            return `• ${content}`;  // Keep bullet
-                        });
-
-                        const p = createElement('p', { textContent: '' }); // Don't set textContent directly
-                        p.innerHTML = formattedLine;  // Use innerHTML for <strong>
-                        sectionDiv.appendChild(p);
-                    });
-
-                } else if (/Certifications/i.test(section)) {
-                    const certificationsHeading = createElement('h2', { textContent: 'Certifications' });
-                    sectionDiv.appendChild(certificationsHeading);
-                     const certificationsText = section.replace(/Certifications:?/i, '').trim();
-                    const ul = createElement('ul');
-                    certificationsText.split(/[,•]/).forEach(cert => {
-                         const trimmedCert = cert.trim();
-                        if (trimmedCert) {
-                            const li = createElement('li', { textContent: trimmedCert });
-                            ul.appendChild(li);
-                        }
-                    });
-                    sectionDiv.appendChild(ul);
-
-                } else {
-                    // Generic paragraph for other content
-                    const p = createElement('p', { textContent: section.trim() });
+                    const p = createElement('p', { textContent: '' }); // Don't set textContent directly
+                    p.innerHTML = formattedLine;  // Use innerHTML for <strong>
                     sectionDiv.appendChild(p);
-                }
+                });
 
-                if (sectionDiv.hasChildNodes()) {
-                    formattedText += sectionDiv.outerHTML;
-                }
-            });
+            } else if (/Certifications/i.test(section)) {
+                const certificationsHeading = createElement('h2', { textContent: 'Certifications' });
+                sectionDiv.appendChild(certificationsHeading);
+                 const certificationsText = section.replace(/Certifications:?/i, '').trim();
+                const ul = createElement('ul');
+                certificationsText.split(/[,•]/).forEach(cert => {
+                     const trimmedCert = cert.trim();
+                    if (trimmedCert) {
+                        const li = createElement('li', { textContent: trimmedCert });
+                        ul.appendChild(li);
+                    }
+                });
+                sectionDiv.appendChild(ul);
 
-            return formattedText;
-        }
-    </script>
+            } else {
+                // Generic paragraph for other content
+                const p = createElement('p', { textContent: section.trim() });
+                sectionDiv.appendChild(p);
+            }
+
+            if (sectionDiv.hasChildNodes()) {
+                formattedText += sectionDiv.outerHTML;
+            }
+        });
+
+        return formattedText;
+    }
+</script>
 </body>
-
 </html>
