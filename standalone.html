@@ -1,472 +1,1308 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Codefusion Visualizer & Live Preview</title>
+    <title>AI Resume Builder & Editor</title>
+    <!-- Favicon -->
+    <link rel="icon" href="https://i.ibb.co/JFj2FQfG/logo-editorush-removebg-preview.png" type="image/png">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- jsPDF Library (REQUIRED!) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        /* Base Styles */
+        /* Base Styles, Input/Button, Loading, Error, Input Group (from previous) */
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Orbitron', sans-serif; /* Futuristic font */
             margin: 0;
-            padding: 0;
-            background: #121212;
-            color: #e5e5e5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-            user-select: none;
-            /* Disable text selection during drag */
-        }
-
-        /* Loading Screen */
-        .loading-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #121212;
+            padding: 20px;
+            background-color: #121212; /* Dark background */
+            color: #eee; /* Light text */
             display: flex;
             justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            overflow: hidden;
+            align-items: flex-start;
+            min-height: 100vh;
         }
 
-        /* Progress Bar */
-        .progress-bar-wrapper {
-            width: 80%;
-            background: #333;
-            border-radius: 25px;
-            overflow: hidden;
-            height: 20px;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0;
-            background: linear-gradient(90deg, #00ff90, #4e00ff);
-            transition: width 1s ease;
-            border-radius: 25px;
-        }
-
-        /* Header */
-        .header {
-            text-align: center;
-            font-size: 40px;
-            color: #9b59b6;
-            margin-top: 20px;
-            letter-spacing: 2px;
-            animation: neon 1.5s ease-in-out infinite alternate;
-        }
-
-        /* Main Container */
         .container {
-            display: flex;
-            flex-direction: column;
+            max-width: 800px;
             width: 100%;
-            max-width: 1200px;
-            margin-top: 20px;
-            opacity: 0;
-            animation: fadeIn 1s forwards;
+            background-color: #222; /* Dark container */
+            padding: 30px;
+            border-radius: 15px; /* More rounded corners */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+            overflow: hidden;
         }
 
-        /* Editor and Preview Wrapper */
-        .editor-preview-wrapper {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            margin-top: 20px;
-            transition: all 0.3s ease;
+        h1 {
+            color: #00a2ff; /* Bright blue */
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: 'Rajdhani', sans-serif; /* Another futuristic font */
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        /* Editor Section */
-        .editor {
-            width: 48%;
-            background: #2a2a2a;
-            border-radius: 10px;
-            padding: 20px;
-            position: relative;
-            transition: all 0.3s ease;
+        h2 {
+            color: #00a2ff;
+            margin-bottom: 15px;
+            border-bottom: 2px solid: #00a2ff;
+            padding-bottom: 5px;
+            display: inline-block;
+             font-family: 'Rajdhani', sans-serif;
         }
-
-        .editor textarea {
+         /* Input and Button Styles */
+        textarea, input[type="text"], button, select {
             width: 100%;
-            height: 80%;
-            background-color: #262626;
-            color: #fff;
-            border: 2px solid #444;
-            border-radius: 10px;
             padding: 12px;
-            font-family: 'Courier New', Courier, monospace;
+            margin-bottom: 15px;
+            border: 1px solid #555; /* Darker border */
+            border-radius: 6px; /* More rounded */
+            box-sizing: border-box;
             font-size: 16px;
-            resize: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Add box-shadow transition */
+            background-color: #333; /* Darker input background */
+            color: #eee;
+        }
+        textarea {
+            height: 150px;
+            resize: vertical;
+            font-family: inherit;
         }
 
-        /* Copy Button */
-        .copy-btn {
-            background: linear-gradient(135deg, #ff9900, #ff4500);
+        textarea:focus, input[type="text"]:focus {
+            border-color: #00a2ff;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 162, 255, 0.6); /* Glowing effect */
+        }
+      /*Required Field*/
+      input:required:invalid {
+  border-left: 3px solid red;
+}
+textarea:required:invalid{
+  border-left: 3px solid red;
+}
+       button {
+            background-color: #00a2ff; /* Bright blue */
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 50px;
             cursor: pointer;
-            font-size: 16px;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease, background 0.3s ease;
-            margin-bottom: 10px;
+            border: none;
+            font-weight: bold;
+            padding: 14px 20px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease, transform 0.1s ease; /* Add transform transition */
+            margin: 0 2px;
         }
 
-        .copy-btn:hover {
-            background: linear-gradient(135deg, #ff4500, #ff9900);
-            transform: scale(1.05);
+        button:hover {
+            background-color: #007acc; /* Darker blue on hover */
+            transform: translateY(-2px); /* Slight lift effect */
         }
 
-        .copy-btn:active {
-            transform: scale(0.95);
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            transform: none; /* No lift on disabled */
         }
 
-        /* Preview Section */
-        .preview {
-            width: 48%;
-            background: #2a2a2a;
+        /* Loading and Result Styles */
+        /* Styling the loading animation */
+        #loading {
+            display: none; /* Hidden by default */
+            text-align: center;
+            margin-top: 20px;
+            color: #3498db; /* Use your theme's color */
+        }
+         #loading.active {
+            display: flex; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        /* Loading animation keyframes */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #00a2ff; /* Use your theme's color */
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        /* Label and Error Styles */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #ddd; /* Slightly lighter than text */
+        }
+
+        .error-message {
+            color: #ff4136;  /* Modern red */
+            margin-top: 10px;
+            display: none;
+            padding: 12px;
+            background-color: rgba(255, 65, 54, 0.1); /* Light red background */
+            border: 1px solid #ff4136;
+            border-radius: 6px;
+        }
+
+        /* Input Group */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        /* --- Resume Preview Styles --- */
+        #resume-preview {
+            font-family: 'Source Code Pro', monospace;
+            line-height: 1.6;
+            padding: 25px;
+            border: 2px solid #00a2ff;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-            padding: 20px;
+            background-color: #2a2a2a;
+            color: #eee;
+            margin-bottom: 25px;
+            overflow-y: auto;
+            max-height: 400px;
+            box-shadow: 0 2px 10px rgba(0, 162, 255, 0.3);
+            user-select: none; /*  prevent text selection */
+            -webkit-user-select: none;  /*  Safari */
+            -moz-user-select: none;     /*  Firefox */
+            -ms-user-select: none;      /*  IE/Edge */
+
+        }
+
+          #resume-preview h2 {
+            font-family: 'Rajdhani', sans-serif;  /* Futuristic heading font */
+            font-weight: 700;
+            color: #00a2ff;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #00a2ff;
+            padding-bottom: 0.25em;
+            text-transform: uppercase;
+        }
+
+        #resume-preview h3 {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            color: #00a2ff;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+            text-transform: uppercase;
+        }
+        #resume-preview .contact-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5em;
+            border-bottom: 1px solid #555; /* Subtle divider */
+            padding-bottom: 1em;
+        }
+        #resume-preview .profile-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-right: 20px;
+            background-color: #555; /* Placeholder */
+            display: flex; /* For centering placeholder text */
+            align-items: center;
+            justify-content: center;
+            color: #777;
+
+        }
+        #resume-preview .contact-details{
+            flex-grow: 1;
+        }
+
+        #resume-preview .contact-info p {
+            margin: 0.3em 0;  /* More vertical space */
+            color: #ddd;  /* Slightly lighter text */
+        }
+
+        #resume-preview .contact-info a {
+            color: #00a2ff;
+            text-decoration: none; /* No underline */
+            transition: color 0.3s ease;
+        }
+
+        #resume-preview .contact-info a:hover {
+            color: #fff; /* Brighter on hover */
+            text-decoration: underline;
+        }
+
+         #resume-preview ul {
+            list-style-type: none; /*  bullets */
+            padding-left: 20px; /*  indentation */
+            margin-bottom: 1em;
+
+        }
+         #resume-preview li::before {
+            content: "•";  /* Unicode bullet */
+            color: #00a2ff;      /*  bullet color */
+            display: inline-block;
+            width: 1em;          /*  space */
+            margin-left: -1em;    /*  alignment */
+        }
+
+        #resume-preview li {
+            margin-bottom: 0.5em;
+            color: #ccc; /* Slightly muted text */
+            margin-left: 1rem;
+        }
+
+        #resume-preview .company-name {
+            font-style: italic;
+            color: #999; /* Muted color for company */
+            margin-bottom: 0.5em;
+        }
+
+         #resume-preview .job-dates {
+            color: #999;
+            margin-bottom: 0.5em;
+        }
+
+        #resume-preview .section-break {
+            border-top: 1px solid #555; /* Subtle separator */
+            margin-top: 1.5em;
+            margin-bottom: 1.5em;
+        }
+
+        /* --- Resume Editor Styles --- */
+        #resume-editor {
+            width: 100%;
+            min-height: 300px;
+            border: 1px solid #555;
+            /* Darker border */
+            padding: 15px;
+            /* Less padding */
+            font-family: 'Source Code Pro', monospace;
+            line-height: 1.6;
+            background-color: #333;
+            /* Dark background */
+            color: #eee;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            border-radius: 10px;
+            /* More rounded */
+            box-shadow: 0 2px 8px rgba(0, 162, 255, 0.4);
+            /* Glow */
             position: relative;
-            transition: all 0.3s ease;
+            /* For the toolbar */
         }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 10px;
+        #resume-editor:focus {
+            outline: 2px solid #00a2ff;
+            border-color: #00a2ff;
         }
 
-        /* Buttons */
-        .toggle-button {
-            background: linear-gradient(135deg, #4e00ff, #00ff90);
-            color: white;
-            padding: 15px 25px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 18px;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease, background 0.3s ease;
-        }
-
-        .toggle-button:hover {
-            background: linear-gradient(135deg, #00ff90, #4e00ff);
-            transform: scale(1.05);
-        }
-
-        .toggle-button:active {
-            transform: scale(0.95);
-        }
-
-        /* Fullscreen & Minimize Buttons */
-        .fullscreen-button,
-        .minimize-button,
-        .refresh-button {
-            background: #ff4500;
-            border-radius: 50%;
-            color: white;
-            font-size: 18px;
-            border: none;
-            cursor: pointer;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 30px;
-            height: 30px;
+        /* --- Toolbar Styles (Floating, Icon-Based) --- */
+        #toolbar {
+           position: fixed;  /* Fixed positioning */
+            top: 20px;        /* Distance from the top */
+            right: 20px;      /* Distance from the right */
+            background-color: #222;
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 5px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
+            flex-direction: column; /* Vertical layout */
+            align-items: center;
+            gap: 10px;
+        }
+         /* Horizontal toolbar */
+        #toolbar.horizontal {
+            flex-direction: row;
+            top: auto;
+            bottom: 20px;
+            right: auto;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .toolbar-button {
+            background-color: transparent; /* Remove background */
+            border: 1px solid #555;
+            padding: 8px;   /* Larger padding for icons */
+            border-radius: 50%;  /* Circular buttons */
+            cursor: pointer;
+            font-size: 18px; /* Larger icon size */
+            color: #eee;
+            width: 40px;     /* Fixed width/height */
+            height: 40px;
+            display: flex;  /* Center icon within button */
             align-items: center;
             justify-content: center;
+            transition: background-color 0.2s, color 0.2s, transform 0.1s ease; /* Add transform */
         }
 
-        .maximize-button {
-            background: #ff4500;
-            border-radius: 50%;
+        .toolbar-button:hover,
+        .toolbar-button.active {
+            background-color: #00a2ff;
             color: white;
-            font-size: 18px;
-            border: none;
-            cursor: pointer;
-            position: absolute;
-            top: 10px;
-            right: 40px;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-color: #00a2ff;
+            transform: scale(1.1); /* Slightly larger on hover/active */
         }
 
-        .fullscreen-button:hover,
-        .minimize-button:hover,
-        .maximize-button:hover,
-        .refresh-button:hover {
-            background: #e94e77;
+        .toolbar-select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            font-size: 14px;
+            margin-right: 5px;
+            display: none; /* Initially hidden */
+            background-color: #333;
+            color: #eee;
+        }
+          /* Show select when active */
+        .toolbar-select.active {
+            display: inline-block;
         }
 
-        /* Animation Keyframes */
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-            }
+        .color-picker {
+            width: 35px; /* square */
+            height: 35px;
+            padding: 0;
+            border: 1px solid #555;
+            border-radius: 50%;
+            vertical-align: middle;
+            display: none;  /* Hidden by default*/
+            background-color: transparent;
+        }
+          .color-picker.active{
+            display: inline-block;
+        }
+         /* Make the label for color picker look like a button */
+        .color-picker + label {
+          display: inline-flex; /* Use flex for centering */
+          align-items: center; /* Vertically center */
+          justify-content: center; /* Horizontally center */
+          width: 40px;        /* Match button size */
+          height: 40px;
+          border-radius: 50%;
+          cursor: pointer;    /* Show pointer cursor */
+          border: 1px solid #555;
+          background-color: transparent;
+          transition: background-color 0.2s, transform 0.1s ease;
+        }
+          .color-picker + label:hover {
+            background-color: #00a2ff;
+            transform: scale(1.1); /* Slightly larger on hover */
+          }
 
-            100% {
-                opacity: 1;
-            }
+        /* Download Button */
+        #downloadButton {
+            background-color: #27ae60;
+            margin-top: 10px;
+        }
+         #downloadButton:hover {
+            background-color: #219d53; /* Darker Green */
         }
 
-        @keyframes neon {
-            0% {
-                text-shadow: 0 0 5px #2bdb72, 0 0 10px #2bdb72, 0 0 15px #2bdb72;
-            }
-
-            100% {
-                text-shadow: 0 0 5px #9b59b6, 0 0 10px #9b59b6, 0 0 15px #9b59b6;
-            }
+        /* --- Page Navigation Styles --- */
+        .page {
+            display: none;
+            /* Hidden by default */
         }
 
-        /* Canvas Styling */
-        #canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+        .page.active {
+            display: block;
+            /* Show active page */
+        }
+        .page-navigation {
+            text-align: center;
+            margin-top: 20px;
+        }
+        /* Edit button styles */
+        #editButton {
+          background-color: #e0a800; /* Gold color */
+          margin-bottom: 15px;
+        }
+        #editButton:hover{
+            background-color: #b38500;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            textarea,
+            input[type="text"],
+            button,
+            select {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+            #resume-preview .profile-photo{
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+            .contact-info{
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            #resume-preview {
+              padding: 15px;  /* Reduce padding */
+            }
+            /* Make toolbar horizontal and at the bottom on small screens */
+          #toolbar {
+              flex-direction: row;
+              top: auto;
+              bottom: 10px;
+              left: 10px;
+              right: 10px;
+              width: auto;
+              padding: 5px;
+          }
+            .toolbar-button {
+                padding: 5px; /* Smaller padding on mobile */
+                font-size: 14px;
+                width: 30px;
+                height: 30px;
+
+            }
         }
     </style>
 </head>
 
 <body>
+    <div class="container">
+        <h1>AI Resume Builder & Editor</h1>
 
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="progress-bar-wrapper">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-    </div>
+        <!-- Page 1: Basic Information -->
+        <div id="page1" class="page active">
+            <p>Provide your basic information below and click "Next".</p>
 
-    <!-- Header -->
-    <div class="header">Codefusion Visualizer & Live Preview</div>
-
-    <!-- Main Container -->
-    <div class="container" id="mainContainer">
-        <!-- Editor and Preview Wrapper -->
-        <div class="editor-preview-wrapper">
-            <!-- Editor Section -->
-            <div class="editor" id="editorSection">
-                <h3>Paste or Edit Your HTML Code</h3>
-                <button class="copy-btn" id="copyCodeBtn" onclick="copyCode()">Copy Code</button>
-                <textarea id="htmlInput" placeholder="Paste your HTML code here..."></textarea>
-                <button class="fullscreen-button" id="fullscreenEditorBtn" onclick="fullscreenEditor()">◻</button>
-                <button class="minimize-button" id="minimizeEditorBtn" onclick="minimizeEditor('editor')">―</button>
-                <button class="maximize-button" style="display: none" id="maximizeEditorBtn" onclick="maximizeEditor('editor')">⊠</button>
-                <button class="refresh-button" id="refreshEditorBtn" onclick="refreshLayout('editor')" style="right: 75px;">↻</button>
+           <div class="input-group">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" placeholder="e.g., John Doe" required>
+            </div>
+            <div class="input-group">
+                <label for="address">Address:</label>
+                <input type="text" id="address" placeholder="e.g., 123 Main St, Anytown" required>
+            </div>
+            <div class="input-group">
+                <label for="phone">Phone Number:</label>
+                <input type="text" id="phone" placeholder="e.g., (123) 456-7890" required>
+            </div>
+            <div class="input-group">
+                <label for="email">Email Address:</label>
+                <input type="text" id="email" placeholder="e.g., john.doe@example.com" required>
+            </div>
+            <div class="input-group">
+                <label for="linkedin">LinkedIn Profile (Optional):</label>
+                <input type="text" id="linkedin" placeholder="e.g., linkedin.com/in/johndoe">
+            </div>
+            <div class="input-group">
+                <label for="github">GitHub Profile (Optional):</label>
+                <input type="text" id="github" placeholder="e.g., github.com/johndoe">
             </div>
 
-            <!-- Live Preview Section -->
-            <div class="preview" id="previewSection">
-                <h3>Live Preview</h3>
-                <iframe id="htmlPreview"></iframe>
-                <button class="fullscreen-button" id="fullscreenPreviewBtn" onclick="fullscreenPreview()">◻</button>
-                <button class="minimize-button" id="minimizePreviewBtn" onclick="minimizeEditor('preview')">―</button>
-                <button class="maximize-button" style="display: none" id="maximizePreviewBtn" onclick="maximizeEditor('preview')">⊠</button>
-                <button class="refresh-button" id="refreshPreviewBtn" onclick="refreshLayout('preview')" style="right: 75px;">↻</button>
+            <div id="error-message-page1" class="error-message"></div>
+            <div class="page-navigation">
+              <button id="next1">Next</button>
+            </div>
+
+        </div>
+
+        <!-- Page 2:  Job Details, Skills, etc. -->
+        <div id="page2" class="page">
+            <p>Provide additional resume details and click "Next".</p>
+             <div class="input-group">
+                <label for="jobTitle">Target Job Title:</label>
+                <input type="text" id="jobTitle" placeholder="e.g., Software Engineer" required>
+            </div>
+            <div class="input-group">
+                <label for="industry">Target Industry:</label>
+                <input type="text" id="industry" placeholder="e.g., Technology" required>
+            </div>
+            <div class="input-group">
+                <label for="skills">Key Skills (comma-separated):</label>
+                <input type="text" id="skills" placeholder="e.g., JavaScript, Python, React" required>
+            </div>
+            <div class="input-group">
+                <label for="experience">Recent Job Experiences:</label>
+                <textarea id="experience"
+                    placeholder="List your job experiences and responsibilities. Format: Job Title, Company, Dates, Responsibilities" required></textarea>
+            </div>
+            <div class="input-group">
+                <label for="achievement">Professional Achievement:</label>
+                <input type="text" id="achievement" placeholder='e.g., "Increased sales by 30% in 6 months"'>
+            </div>
+            <div class="input-group">
+                <label for="education">Education:</label>
+                <textarea id="education" placeholder="List your education. Format: Degree, University, Dates" required></textarea>
+            </div>
+            <div class="input-group">
+                <label for="certifications">Certifications/Training (comma-separated):</label>
+                <input type="text" id="certifications" placeholder="e.g., AWS Certified, PMP">
+            </div>
+            <div class="input-group">
+                <label for="summary_option">Do you need Professional Summary:</label>
+                <select id="summary_option">
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+
+            <div id="error-message-page2" class="error-message"></div>
+            <div class="page-navigation">
+              <button id="previewButton">Preview Resume</button>
             </div>
         </div>
 
-        <!-- Toggle Button -->
-        <button id="toggleBtn" class="toggle-button" onclick="togglePlaceholder()">Toggle Placeholder</button>
-    </div>
+        <!-- Page 3: Editor and Preview -->
+        <div id="page3" class="page">
+            <div id="loading">
+  <div class="spinner"></div> <!--  loading animation -->
+  Generating Resume...
+</div>
 
-    <!-- Canvas -->
-    <canvas id="canvas"></canvas>
+            <div id="result-container">
+                <h2>Resume Preview:</h2>
+                <div id="resume-preview"></div>
+                <button id="editButton">Edit Resume</button> <!-- Edit button -->
+                <h2>Edit Resume:</h2>
+                <div id="resume-editor" contenteditable="true"></div>
+                <!-- Toolbar (fixed) -->
+                <div id="toolbar">
+                    <button id="fontFamilyButton" class="toolbar-button" title="Font Family"><i class="fas fa-font"></i></button>
+                    <select id="fontFamily" class="toolbar-select">
+                        <option value="Arial">Arial</option>
+                        <option value="Verdana">Verdana</option>
+                        <option value="Tahoma">Tahoma</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="'Times New Roman'">Times New Roman</option>
+                        <option value="Courier New">Courier New</option>
+                        <option value="'Open Sans'">Open Sans</option>
+                    </select>
+
+                    <button id="fontSizeButton" class="toolbar-button" title="Font Size"><i
+                            class="fas fa-text-height"></i></button>
+                    <select id="fontSize" class="toolbar-select">
+                        <option value="10px">10px</option>
+                        <option value="12px" selected>12px</option>
+                        <option value="14px">14px</option>
+                        <option value="16px">16px</option>
+                        <option value="18px">18px</option>
+                        <option value="20px">20px</option>
+                        <option value="24px">24px</option>
+                    </select>
+
+                   <button id="headingsButton" class="toolbar-button" title="Heading Style"><i
+                            class="fas fa-heading"></i></button>
+                    <select id="headings" class="toolbar-select">
+                        <option value="p">Normal Text</option>
+                        <option value="h1">Heading 1</option>
+                        <option value="h2">Heading 2</option>
+                        <option value="h3">Heading 3</option>
+                    </select>
+
+                    <button id="boldButton" class="toolbar-button" title="Bold"><i class="fas fa-bold"></i></button>
+                    <button id="italicButton" class="toolbar-button" title="Italic"><i
+                            class="fas fa-italic"></i></button>
+                    <button id="underlineButton" class="toolbar-button" title="Underline"><i
+                            class="fas fa-underline"></i></button>
+                    <button id="strikethroughButton" class="toolbar-button" title="Strikethrough"><i
+                            class="fas fa-strikethrough"></i></button>
+                   <button id="uppercaseButton" class="toolbar-button" title="Uppercase">ABC</button>
+
+                    <button id="textAlignButton" class="toolbar-button" title="Text Align"><i
+                            class="fas fa-align-left"></i></button>
+                    <select id="textAlign" class="toolbar-select">
+                        <option value="left">Align Left</option>
+                        <option value="center">Center</option>
+                        <option value="right">Align Right</option>
+                        <option value="justify">Justify</option>
+                    </select>
+
+                    <button id="listButton" class="toolbar-button" title="Bullet List"><i
+                            class="fas fa-list-ul"></i></button>
+                    <button id="numberListButton" class="toolbar-button" title="Numbered List"><i
+                            class="fas fa-list-ol"></i></button>
+
+                    <button id="textColorButton" class="toolbar-button" title="Text Color"><i class="fas fa-palette"></i></button>
+                    <input type="color" id="textColor" class="color-picker">
+
+                   <button id="backgroundColorButton" class="toolbar-button" title="Background Color"><i
+                            class="fas fa-fill-drip"></i></button>
+                    <input type="color" id="backgroundColor" class="color-picker">
+
+
+                    <button id="downloadButton" class="toolbar-button" title="Download PDF"><i
+                            class="fas fa-download"></i></button>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
     <script>
-        let progress = 0;
-        const progressBar = document.getElementById('progressBar');
-        const loadingScreen = document.getElementById('loadingScreen');
-        const mainContainer = document.getElementById('mainContainer');
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        let savedCode = ""; //Store code
+        const loadingIndicator = document.getElementById('loading');
+        const resultContainer = document.getElementById('result-container');
+        const resumePreviewDiv = document.getElementById('resume-preview');
+        const resumeEditorDiv = document.getElementById('resume-editor');
+        const downloadButton = document.getElementById('downloadButton');
+        const GEMINI_API_KEY = "YOUR_API_KEY"; // Get from .env 
 
-        // Canvas particle animation
-        let particles = [];
+        // Input elements
+        const nameInput = document.getElementById('name');
+        const addressInput = document.getElementById('address');
+        const phoneInput = document.getElementById('phone');
+        const emailInput = document.getElementById('email');
+        const linkedinInput = document.getElementById('linkedin');
+        const githubInput = document.getElementById('github');
+        const jobTitleInput = document.getElementById('jobTitle');
+        const industryInput = document.getElementById('industry');
+        const skillsInput = document.getElementById('skills');
+        const experienceInput = document.getElementById('experience');
+        const achievementInput = document.getElementById('achievement');
+        const educationInput = document.getElementById('education');
+        const certificationsInput = document.getElementById('certifications');
+        const summaryOptionSelect = document.getElementById('summary_option');
 
-        function createParticle(x, y) {
-            const particle = {
-                x: x,
-                y: y,
-                size: Math.random() * 5 + 2,
-                speedX: Math.random() * 2 - 1,
-                speedY: Math.random() * 2 - 1,
-                color: '#00ff90'
-            };
-            particles.push(particle);
-        }
+        // --- Toolbar Elements ---
+        const fontFamilySelect = document.getElementById('fontFamily');
+        const fontSizeSelect = document.getElementById('fontSize');
+        const boldButton = document.getElementById('boldButton');
+        const italicButton = document.getElementById('italicButton');
+        const underlineButton = document.getElementById('underlineButton');
+        const strikethroughButton = document.getElementById('strikethroughButton');
+        const uppercaseButton = document.getElementById('uppercaseButton');
+        const textAlignSelect = document.getElementById('textAlign');
+        const listButton = document.getElementById('listButton');
+        const numberListButton = document.getElementById('numberListButton');
+        const textColorPicker = document.getElementById('textColor');
+        const backgroundColorPicker = document.getElementById('backgroundColor');
+        const headingsSelect = document.getElementById('headings');
+        const fontFamilyButton = document.getElementById('fontFamilyButton');
+        const fontSizeButton = document.getElementById('fontSizeButton');
+        const textAlignButton = document.getElementById('textAlignButton');
+        const headingsButton = document.getElementById('headingsButton');
+        const textColorButton = document.getElementById('textColorButton');
+        const backgroundColorButton = document.getElementById('backgroundColorButton');
 
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            particles.forEach((particle, index) => {
-                particle.x += particle.speedX;
-                particle.y += particle.speedY;
-                ctx.beginPath();
-                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                ctx.fillStyle = particle.color;
-                ctx.fill();
+        // --- Page Navigation ---
+        const page1 = document.getElementById('page1');
+        const page2 = document.getElementById('page2');
+        const page3 = document.getElementById('page3');
+        const next1Button = document.getElementById('next1');
+        const previewButton = document.getElementById('previewButton');
+        const errorMessagePage1 = document.getElementById('error-message-page1');
+        const errorMessagePage2 = document.getElementById('error-message-page2');
+        const editButton = document.getElementById('editButton'); // EDIT button
+        resultContainer.style.display = "none";
 
-                // Remove particles that move off-screen
-                if (particle.x < 0 || particle.x > canvas.width || particle.y < 0 || particle.y > canvas.height) {
-                    particles.splice(index, 1);
-                }
-            });
-
-            requestAnimationFrame(animateParticles);
-        }
-
-        // Handle mouse move for canvas particles
-        document.addEventListener('mousemove', (e) => {
-            createParticle(e.x, e.y);
-        });
-
-        // Handle window resizing for canvas
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-
-        // Simulate loading
-        function simulateLoading() {
-            setInterval(() => {
-                if (progress < 100) {
-                    progress++;
-                    progressBar.style.width = progress + '%';
-                } else {
-                    loadingScreen.style.display = 'none';
-                    mainContainer.style.opacity = 1;
-                }
-            }, 10);
-        }
-
-        simulateLoading();
-
-        // Initialize Canvas Size
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        // Handle HTML Input and Live Preview
-        const htmlInput = document.getElementById('htmlInput');
-        const htmlPreview = document.getElementById('htmlPreview');
-
-        htmlInput.addEventListener('input', function () {
-            htmlPreview.srcdoc = htmlInput.value;
-            savedCode = htmlInput.value; // Save the code
-        });
-           // Restore saved code when page loads
-           window.onload = function() {
-                if (savedCode) {
-                    htmlInput.value = savedCode;
-                     htmlPreview.srcdoc = savedCode;
-               }
-           }
-        // Toggle Placeholder Visibility
-        function togglePlaceholder() {
-            const editorSection = document.getElementById('editorSection');
-            const previewSection = document.getElementById('previewSection');
-            const toggleBtn = document.getElementById('toggleBtn');
-
-            if (editorSection.style.display === 'none') {
-                editorSection.style.display = 'block';
-                previewSection.style.width = '48%';
-                toggleBtn.innerText = 'Hide Placeholder';
+        next1Button.addEventListener('click', () => {
+            // Inline validation, adding 'invalid' class
+            let isValid = true;
+            if (!nameInput.value.trim()) {
+                nameInput.classList.add('invalid');
+                isValid = false;
             } else {
-                editorSection.style.display = 'none';
-                previewSection.style.width = '100%';
-                toggleBtn.innerText = 'Show Placeholder';
+                nameInput.classList.remove('invalid');
+            }
+             if (!addressInput.value.trim()) {
+                addressInput.classList.add('invalid');
+                isValid = false;
+            } else {
+                addressInput.classList.remove('invalid');
+            }
+            if (!phoneInput.value.trim()) {
+                phoneInput.classList.add('invalid');
+                isValid = false;
+            } else {
+                phoneInput.classList.remove('invalid');
+            }
+            if (!emailInput.value.trim()) {
+                emailInput.classList.add('invalid');
+                isValid = false;
+            } else {
+                emailInput.classList.remove('invalid');
+            }
+
+            if (!isValid) {
+                showError("Please fill in all required fields.", errorMessagePage1);
+                return;
+            }
+
+            hideError(errorMessagePage1);
+            page1.classList.remove('active');
+            page2.classList.add('active');
+        });
+
+        // --- Preview Button (Generates and Shows Preview) ---
+        previewButton.addEventListener('click', async () => {
+             // Validate required fields on Page 2
+            if (!jobTitleInput.value.trim() || !industryInput.value.trim() || !skillsInput.value.trim() || !experienceInput.value.trim() || !educationInput.value.trim()) {
+                showError("Please fill in all required fields on this page.", errorMessagePage2);
+                return; // Stop if validation fails
+              }
+
+            hideError(errorMessagePage2);
+            page2.classList.remove('active');
+            page3.classList.add('active');
+            loadingIndicator.classList.add('active'); // Show loading
+
+            // --- Resume Generation (Gemini API call) ---
+             const name = nameInput.value.trim();
+            const address = addressInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const email = emailInput.value.trim();
+            const linkedin = linkedinInput.value.trim();
+            const github = githubInput.value.trim();
+            const jobTitle = jobTitleInput.value.trim();
+            const industry = industryInput.value.trim();
+            const skills = skillsInput.value.trim();
+            const experience = experienceInput.value.trim();
+            const achievement = achievementInput.value.trim();
+            const education = educationInput.value.trim();
+            const certifications = certificationsInput.value.trim();
+            const summaryOption = summaryOptionSelect.value;
+
+            let geminiPrompt = `Create a modern and professional resume template with a clean, ATS-friendly layout. The color scheme should use neutral tones (white, gray, and navy blue) with subtle accent colors for highlights. The font should be a mix of bold sans-serif for headings and light serif for body text. Include sections for Profile Summary, Work Experience, Skills, Education, and Contact Information. Add icons for social media links and a small profile photo placeholder in the header for a sleek, polished look. Omit unnecessary symbols and use a single-column layout. Format the output for readability, using appropriate spacing and indentation. Ensure the resume is well-organized and easy to scan.
+
+            Here's the information to use to populate the resume:
+
+            `;
+
+            if (name) geminiPrompt += `\nName: ${name}`;
+            if (address) geminiPrompt += `\nAddress: ${address}`;
+            if (phone) geminiPrompt += `\nPhone: ${phone}`;
+            if (email) geminiPrompt += `\nEmail: ${email}`;
+            if (linkedin) geminiPrompt += `\nLinkedIn: ${linkedin}`;
+            if (github) geminiPrompt += `\nGitHub: ${github}`;
+            geminiPrompt += `\nTarget Job Title: ${jobTitle}`;
+            geminiPrompt += `\nTarget Industry: ${industry}`;
+            geminiPrompt += `\nKey Skills: ${skills}`;
+            geminiPrompt += `\nRecent Job Experiences: ${experience}`;
+            if (achievement) {
+                geminiPrompt += `\nProfessional Achievement: ${achievement}`;
+            }
+            geminiPrompt += `\nEducation: ${education}`;
+                        if (certifications) geminiPrompt += `\nCertifications/Training: ${certifications}`;
+                        geminiPrompt += `\nInclude Professional Summary?: ${summaryOption}`;
+
+            geminiPrompt += `\n\nOutput ONLY the resume content in plain text, using Markdown for basic formatting (headings, bullet points).  Do NOT include any introductory text, explanations, or HTML.`;
+
+            console.log("Sending to Gemini:", geminiPrompt);
+
+            try {
+                const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: geminiPrompt
+                            }]
+                        }]
+                    })
+                });
+
+                console.log("Gemini Response Status:", geminiResponse.status);
+
+                if (!geminiResponse.ok) {
+                    const geminiErrorText = await geminiResponse.text();
+                    throw new Error(`Gemini API Error: ${geminiResponse.status} - ${geminiErrorText}`);
+                }
+
+                const geminiData = await geminiResponse.json();
+                console.log("Gemini Response:", geminiData);
+
+                if (geminiData.candidates && geminiData.candidates.length > 0 && geminiData.candidates[0].content && geminiData.candidates[0].content.parts && geminiData.candidates[0].content.parts.length > 0) {
+                    const geminiText = geminiData.candidates[0].content.parts[0].text;
+
+                    // Format and display resume *only in the preview*
+                    const formattedResume = formatResumeText(geminiText);
+                    resumePreviewDiv.innerHTML = formattedResume;
+                    resultContainer.style.display = "block"; // Show results
+                    resumeEditorDiv.style.display = 'none';   // Hide editor initially
+                    downloadButton.style.display = 'none';   // Hide download initially
+                    editButton.style.display = 'block';      // Show edit button
+
+                } else {
+                    throw new Error("Gemini API returned an unexpected response structure.");
+                }
+
+            } catch (error) {
+                showError(error.message, errorMessagePage2); // Show errors on page 2
+                console.error("Error:", error);
+                page2.classList.add('active');  // Stay on page 2 if error
+                page3.classList.remove('active');
+            } finally {
+                loadingIndicator.classList.remove('active'); // Always hide
+            }
+        });
+
+        // --- Edit Button:  Show Editor, Hide Preview ---
+        editButton.addEventListener('click', () => {
+            // Copy *preview* content to editor
+            resumeEditorDiv.innerHTML = resumePreviewDiv.innerHTML;
+            resumeEditorDiv.style.display = 'block'; // Show the editor
+            downloadButton.style.display = 'inline-block'; // Show download button
+            editButton.style.display = 'none'; // Hide the edit button
+        });
+
+
+        // --- Toolbar Event Listeners ---
+        fontFamilyButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fontFamilySelect.classList.toggle('active');
+            fontSizeSelect.classList.remove('active');
+            headingsSelect.classList.remove('active');
+            textAlignSelect.classList.remove('active');
+        });
+
+        fontFamilySelect.addEventListener('change', () => {
+            document.execCommand('fontName', false, fontFamilySelect.value);
+            fontFamilySelect.classList.remove('active'); // Hide after selection
+        });
+
+        fontSizeButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          fontSizeSelect.classList.toggle('active');
+          fontFamilySelect.classList.remove('active');
+          headingsSelect.classList.remove('active');
+          textAlignSelect.classList.remove('active');
+        });
+        fontSizeSelect.addEventListener('change', () => {
+           applyFontSize(fontSizeSelect.value);
+           fontSizeSelect.classList.remove('active');
+        });
+
+        //Helper function to change font size
+        function applyFontSize(size) {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const span = document.createElement('span');
+                span.style.fontSize = size;
+                range.surroundContents(span);
             }
         }
 
-        // Copy Code to Clipboard
-        function copyCode() {
-            const textarea = document.getElementById('htmlInput');
-            textarea.select();
-            document.execCommand('copy');
-            alert('Code Copied to Clipboard!');
+        headingsButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          headingsSelect.classList.toggle('active');
+          fontFamilySelect.classList.remove('active');
+          fontSizeSelect.classList.remove('active');
+          textAlignSelect.classList.remove('active');
+        });
+        headingsSelect.addEventListener('change', () => {
+             document.execCommand('formatBlock', false, `<${headingsSelect.value}>`);
+             headingsSelect.classList.remove('active');
+        });
+
+        boldButton.addEventListener('click', () => {
+            document.execCommand('bold', false, null);
+            updateButtonState();
+        });
+
+        italicButton.addEventListener('click', () => {
+            document.execCommand('italic', false, null);
+            updateButtonState();
+        });
+
+        underlineButton.addEventListener('click', () => {
+            document.execCommand('underline', false, null);
+            updateButtonState();
+        });
+
+        strikethroughButton.addEventListener('click', () => {
+            document.execCommand('strikeThrough', false, null);
+             updateButtonState();
+        });
+        uppercaseButton.addEventListener('click', () => {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const selectedText = range.toString();
+
+                if (selectedText) {
+                    const newNode = document.createTextNode(selectedText.toUpperCase());
+                    range.deleteContents();
+                    range.insertNode(newNode);
+                }
+            }
+             updateButtonState();
+        });
+        textAlignButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          textAlignSelect.classList.toggle('active');
+           fontFamilySelect.classList.remove('active');
+          fontSizeSelect.classList.remove('active');
+          headingsSelect.classList.remove('active');
+        });
+        textAlignSelect.addEventListener('change', () => {
+            document.execCommand('justify' + textAlignSelect.value.charAt(0).toUpperCase() + textAlignSelect.value.slice(1), false, null);
+             textAlignSelect.classList.remove('active'); //hides after used
+        });
+
+        listButton.addEventListener('click', () => {
+            document.execCommand('insertUnorderedList', false, null);
+        });
+
+        numberListButton.addEventListener('click', () => {
+            document.execCommand('insertOrderedList', false, null);
+        });
+        //text color
+        textColorButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          textColorPicker.classList.toggle('active');
+          backgroundColorPicker.classList.remove('active');
+        });
+        textColorPicker.addEventListener('change', () => {
+            document.execCommand('foreColor', false, textColorPicker.value);
+             textColorPicker.classList.remove('active');
+        });
+
+        // background color
+        backgroundColorButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          backgroundColorPicker.classList.toggle('active');
+          textColorPicker.classList.remove('active');
+        });
+        backgroundColorPicker.addEventListener('change', () => {
+            document.execCommand('backColor', false, backgroundColorPicker.value);
+            backgroundColorPicker.classList.remove('active'); // Hide after selecting
+
+        });
+
+        // Function to update the button states (bold, italic, underline, etc.)
+        function updateButtonState() {
+            boldButton.classList.toggle('active', document.queryCommandState('bold'));
+            italicButton.classList.toggle('active', document.queryCommandState('italic'));
+            underlineButton.classList.toggle('active', document.queryCommandState('underline'));
+            strikethroughButton.classList.toggle('active', document.queryCommandState('strikeThrough'));
         }
 
-        // Minimize and Maximize Editor/Preview
-        function minimizeEditor(section) {
-            const sectionElement = document.getElementById(section + 'Section');
-            const minimizeButton = document.getElementById('minimize' + section.charAt(0).toUpperCase() + section.slice(1) + 'Btn');
-            const maximizeButton = document.getElementById('maximize' + section.charAt(0).toUpperCase() + section.slice(1) + 'Btn');
+        // Update button states when selection changes
+        resumeEditorDiv.addEventListener('mouseup', updateButtonState);
+        resumeEditorDiv.addEventListener('keyup', updateButtonState);
 
-            sectionElement.style.height = '40px';
-            minimizeButton.style.display = 'none';
-            maximizeButton.style.display = 'flex';
+        // --- Download Button (jsPDF) ---
+        downloadButton.addEventListener('click', () => {
+            const editedResumeHTML = resumeEditorDiv.innerHTML;
+
+            if (typeof jsPDF === 'undefined') {
+                alert("jsPDF library not found. Please include jsPDF in your HTML.");
+                return;
+            }
+
+            const doc = new jsPDF({
+                orientation: 'p',
+                unit: 'mm',
+                format: 'a4',
+                putOnlyUsedFonts: true,
+                floatPrecision: 16
+            });
+
+            const resumeText = editedResumeHTML.replace(/<br\s*\/?>/gi, '\n')
+                .replace(/<\/p>/gi, '\n\n')
+                .replace(/<\/h\d>/gi, '\n\n')
+                .replace(/<\/li>/gi, '\n')
+                .replace(/<[^>]+>/g, '')  // Remove all tags
+                .replace(/ /g, ' ')
+                .replace(/&/g, '&')
+                .replace(/</g, '<')
+                .replace(/>/g, '>')
+                .replace(/"/g, '"')
+                .replace(/'/g, "'");
+
+            doc.setFontSize(12);
+            doc.setFont('Arial', 'normal'); // Use a standard font
+
+            const splitText = doc.splitTextToSize(resumeText, 180); // Wrap text
+            doc.text(splitText, 15, 20); // Add text with margins
+
+            doc.save('resume.pdf');
+        });
+
+        //Close the color picker and the dropdown selections when the user clicks outside of it
+        document.addEventListener('click', (e) => {
+          if (!fontFamilySelect.contains(e.target) && !fontFamilyButton.contains(e.target)) {
+            fontFamilySelect.classList.remove('active');
+          }
+          if(!fontSizeSelect.contains(e.target) && !fontSizeButton.contains(e.target)){
+            fontSizeSelect.classList.remove('active');
+          }
+           if(!textAlignSelect.contains(e.target) && !textAlignButton.contains(e.target)){
+            textAlignSelect.classList.remove('active');
+          }
+           if(!headingsSelect.contains(e.target) && !headingsButton.contains(e.target)){
+            headingsSelect.classList.remove('active');
+          }
+          if(!textColorPicker.contains(e.target) && !textColorButton.contains(e.target)){
+            textColorPicker.classList.remove('active');
+          }
+           if(!backgroundColorPicker.contains(e.target) && !backgroundColorButton.contains(e.target)){
+            backgroundColorPicker.classList.remove('active');
+          }
+        });
+
+        function showError(message, errorDiv) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
         }
 
-        function maximizeEditor(section) {
-            const sectionElement = document.getElementById(section + 'Section');
-            const minimizeButton = document.getElementById('minimize' + section.charAt(0).toUpperCase() + section.slice(1) + 'Btn');
-            const maximizeButton = document.getElementById('maximize' + section.charAt(0).toUpperCase() + section.slice(1) + 'Btn');
-
-            sectionElement.style.height = 'auto';
-            minimizeButton.style.display = 'flex';
-            maximizeButton.style.display = 'none';
+        function hideError(errorDiv) {
+            errorDiv.style.display = 'none';
         }
 
-        // Fullscreen for Editor
-        function fullscreenEditor() {
-            const editorSection = document.getElementById('editorSection');
-            editorSection.style.width = '100%';
-            editorSection.style.height = '100vh';
-            editorSection.style.position = 'absolute';
-            editorSection.style.top = '0';
-            editorSection.style.left = '0';
+        // createElement function (same as before)
+        function createElement(tag, options = {}) {
+            const element = document.createElement(tag);
+            const { textContent = '', className = '', attributes = {}, children = [] } = options;
+
+            if (textContent) {
+                element.textContent = textContent;
+            }
+            if (className) {
+                element.className = className;
+            }
+            for (const key in attributes) {
+                element.setAttribute(key, attributes[key]);
+            }
+            children.forEach(child => element.appendChild(child));
+            return element;
         }
 
-        // Fullscreen for Preview
-        function fullscreenPreview() {
-            const previewSection = document.getElementById('previewSection');
-            previewSection.style.width = '100%';
-            previewSection.style.height = '100vh';
-            previewSection.style.position = 'absolute';
-            previewSection.style.top = '0';
-            previewSection.style.left = '0';
+        function formatResumeText(text) {
+            let formattedText = '';
+
+           const sections = text.split(/\n(?=\s*(?:Summary|Experience|Skills|Education|Certifications|Contact)\s*:?\s*$)/mi);
+
+            sections.forEach(section => {
+                const sectionDiv = createElement('div', { className: 'section' });
+
+                if (/Contact/i.test(section)) {
+                    const contactDiv = createElement('div', { className: 'contact-info' });
+                    const profilePhoto = createElement('div', { className: 'profile-photo', textContent: 'Photo' });
+                    contactDiv.appendChild(profilePhoto);
+
+                   const contactDetails = createElement('div', { className: 'contact-details' });
+                    const contactLines = section.replace(/Contact:?/i, '').trim().split('\n');
+
+                    contactLines.forEach(line => {
+                        const trimmedLine = line.trim();
+                        if (!trimmedLine) return;
+
+                        const linkedInMatch = trimmedLine.match(/(https?:\/\/(?:www\.)?linkedin\.com\/[^\s]+)/);
+                        const githubMatch = trimmedLine.match(/(https?:\/\/(?:www\.)?github\.com\/[^\s]+)/);
+                        const emailMatch = trimmedLine.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+                        const phoneMatch = trimmedLine.match(/(\+?\d[\d\s-()]*)/); // More robust phone regex
+
+                        if (linkedInMatch) {
+                            const link = createElement('a', { textContent: 'LinkedIn', attributes: { href: linkedInMatch[1], target: '_blank' } });
+                            const icon = createElement('i', { className: 'fab fa-linkedin' });
+                            const p = createElement('p');
+                            p.appendChild(icon);
+                            p.appendChild(document.createTextNode(' '));
+                            p.appendChild(link);
+                            contactDetails.appendChild(p);
+
+                        } else if (githubMatch) {
+                            const link = createElement('a', { textContent: 'GitHub', attributes: { href: githubMatch[1], target: '_blank' } });
+                            const icon = createElement('i', { className: 'fab fa-github' });
+                            const p = createElement('p');
+                            p.appendChild(icon);
+                            p.appendChild(document.createTextNode(' '));
+                            p.appendChild(link);
+                            contactDetails.appendChild(p);
+                        } else if (emailMatch) {
+                            // Make email clickable
+                            const link = createElement('a', { textContent: trimmedLine, attributes: { href: `mailto:${trimmedLine}` } });
+                            const p = createElement('p');
+                            p.appendChild(link);
+                            contactDetails.appendChild(p);
+                        }
+                        else if (phoneMatch) {
+                            // Make phone number clickable
+                          const link = createElement('a', { textContent: trimmedLine, attributes: { href: `tel:${trimmedLine.replace(/[^0-9+]/g, '')}` } });
+                          const p = createElement('p');
+                          p.appendChild(link);
+                          contactDetails.appendChild(p);
+                        }
+                        else {
+                            const p = createElement('p', { textContent: trimmedLine });
+                            contactDetails.appendChild(p);
+                        }
+                    });
+
+                    contactDiv.appendChild(contactDetails);
+                    sectionDiv.appendChild(contactDiv);
+
+                } else if (/Summary/i.test(section)) {
+                    const summaryHeading = createElement('h2', { textContent: 'Summary' });
+                    sectionDiv.appendChild(summaryHeading);
+                    const summaryContent = section.replace(/Summary:?/i, '').trim();
+
+                    const summaryLines = summaryContent.split('\n');
+                    summaryLines.forEach(line => {
+                        const trimmedLine = line.trim();
+                        if (!trimmedLine) return;
+
+                        let formattedLine = trimmedLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');  // Bold
+                        formattedLine = formattedLine.replace(/^\s*[-•]\s*(.+)/, (match, content) => {
+                            return `• ${content}`;  // Keep bullet
+                        });
+
+                        const p = createElement('p', { textContent: '' }); // Don't set textContent directly
+                        p.innerHTML = formattedLine;  // Use innerHTML for <strong>
+                        sectionDiv.appendChild(p);
+                    });
+
+                } else if (/Skills/i.test(section)) {
+                    const skillsHeading = createElement('h2', { textContent: 'Skills' });
+                    sectionDiv.appendChild(skillsHeading);
+                    const skillsList = section.replace(/Skills:?/i, '').trim();
+                    const ul = createElement('ul');
+                    skillsList.split(/[,•]/).forEach(skill => {
+                        const trimmedSkill = skill.trim();
+                        if (trimmedSkill) {
+                            const li = createElement('li', { textContent: trimmedSkill });
+                            ul.appendChild(li);
+                        }
+                    });
+                    sectionDiv.appendChild(ul);
+
+
+                } else if (/Experience/i.test(section)) {
+                    const experienceHeading = createElement('h2', { textContent: 'Experience' });
+                    sectionDiv.appendChild(experienceHeading);
+
+                   const experiences = section.replace(/Experience:?/i, '').trim().split(/\n(?=\s*[-•]\s*[A-Za-z])/);  //Regex for splitting
+                   experiences.forEach(exp => {
+                       const jobDetails = exp.trim().split('\n');
+                       if (jobDetails.length > 0 && jobDetails[0].trim() !== '') {
+                            const jobTitleMatch = jobDetails[0].match(/^\s*[-•]\s*(.+)/);  //remove bullet point
+                            const jobTitle = jobTitleMatch ? jobTitleMatch[1].trim() : jobDetails[0].trim();
+                            const jobTitleElement = createElement('h3', { textContent: jobTitle, className: 'job-title' });
+                            sectionDiv.appendChild(jobTitleElement);
+
+                           if (jobDetails.length > 1) {
+                                const companyLine = jobDetails[1].trim();
+                                const companyElement = createElement('p', { textContent: companyLine, className: 'company-name' });
+                                sectionDiv.appendChild(companyElement);
+
+                                // Extract job dates (if on a separate line)
+                                if (jobDetails.length > 2 && jobDetails[2].trim().match(/(\d{4})\s*-\s*(\d{4}|Present)/)) {
+                                    const dates = jobDetails[2].trim();
+                                     const datesElement = createElement('p', { textContent: dates, className: 'job-dates' });
+                                     sectionDiv.appendChild(datesElement);
+
+                                    // Create a UL for responsibilities starting from line 4
+                                    const ul = createElement('ul');
+                                        for (let i = 3; i < jobDetails.length; i++) {
+                                             let line = jobDetails[i].trim();
+                                              if (!line) continue; // Skip empty lines
+
+                                            // Handle bullet points and bolding within the responsibilities
+                                            line = line.replace(/^\s*[-•]\s*(.+)/, (match, content) => {
+                                                return `• ${content}`; // Keep bullet point
+                                            });
+                                            line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
+
+                                            const li = createElement('li'); // Create the <li>
+                                            li.innerHTML = line;       // Set innerHTML to render <strong>
+                                            ul.appendChild(li);
+                                        }
+                                        if(ul.hasChildNodes()){
+                                            sectionDiv.appendChild(ul);
+                                        }
+
+                                }else{
+                                     // Create a UL for responsibilities starting from line 3
+                                    const ul = createElement('ul');
+                                    for (let i = 2; i < jobDetails.length; i++) {
+                                        let line = jobDetails[i].trim();
+                                        if (!line) continue;
+
+                                        // Handle bullet points and bolding
+                                        line = line.replace(/^\s*[-•]\s*(.+)/, (match, content) => {
+                                            return `• ${content}`;
+                                        });
+                                        line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+                                        const li = createElement('li');
+                                        li.innerHTML = line;
+                                        ul.appendChild(li);
+                                    }
+                                    if(ul.hasChildNodes()){
+                                        sectionDiv.appendChild(ul);
+                                    }
+
+                                }
+                           }
+                       }
+                    });
+
+                } else if (/Education/i.test(section)) {
+                    const educationHeading = createElement('h2', { textContent: 'Education' });
+                    sectionDiv.appendChild(educationHeading);
+                   const educationText = section.replace(/Education:?/i, '').trim();
+                    const educationLines = educationText.split('\n');
+                    educationLines.forEach(line => {
+                        const trimmedLine = line.trim();
+                        if (!trimmedLine) return;
+
+                        let formattedLine = trimmedLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');  // Bold
+                        formattedLine = formattedLine.replace(/^\s*[-•]\s*(.+)/, (match, content) => {
+                            return `• ${content}`;  // Keep bullet
+                        });
+
+                        const p = createElement('p', { textContent: '' }); // Don't set textContent directly
+                        p.innerHTML = formattedLine;  // Use innerHTML for <strong>
+                        sectionDiv.appendChild(p);
+                    });
+
+                } else if (/Certifications/i.test(section)) {
+                    const certificationsHeading = createElement('h2', { textContent: 'Certifications' });
+                    sectionDiv.appendChild(certificationsHeading);
+                     const certificationsText = section.replace(/Certifications:?/i, '').trim();
+                    const ul = createElement('ul');
+                    certificationsText.split(/[,•]/).forEach(cert => {
+                         const trimmedCert = cert.trim();
+                        if (trimmedCert) {
+                            const li = createElement('li', { textContent: trimmedCert });
+                            ul.appendChild(li);
+                        }
+                    });
+                    sectionDiv.appendChild(ul);
+
+                } else {
+                    // Generic paragraph for other content
+                    const p = createElement('p', { textContent: section.trim() });
+                    sectionDiv.appendChild(p);
+                }
+
+                if (sectionDiv.hasChildNodes()) {
+                    formattedText += sectionDiv.outerHTML;
+                }
+            });
+
+            return formattedText;
         }
-
-        // Refresh Layout
-        function refreshLayout(section) {
-            const sectionElement = document.getElementById(section + 'Section');
-            const minimizeButton = document.getElementById('minimize' + section.charAt(0).toUpperCase() + section.slice(1) + 'Btn');
-            const maximizeButton = document.getElementById('maximize' + section.charAt(0).toUpperCase() + section.slice(1) + 'Btn');
-
-            sectionElement.style.width = '48%';
-            sectionElement.style.height = 'auto';
-            minimizeButton.style.display = 'flex';
-            maximizeButton.style.display = 'none';
-            sectionElement.style.position = 'relative';
-            sectionElement.style.top = 'auto';
-            sectionElement.style.left = 'auto';
-        }
-
-       animateParticles();
     </script>
-
 </body>
 
 </html>
