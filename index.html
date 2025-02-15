@@ -3,38 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to PDF Converter</title>
+    <title>Resume Editor</title>
     <link rel="icon" href="https://i.ibb.co/JFj2FQfG/logo-editorush-removebg-preview.png" type="image/png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Roboto:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* General Styles */
         body {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Open Sans', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #121212;
-            color: #eee;
+            background-color: #121212; /* Dark background */
+            color: #eee; /* Light text for dark background */
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
+            position: relative;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode {
+            background-color: #ffffff; /* Light background */
+            color: #333; /* Dark text for light background */
         }
 
         .container {
             max-width: 800px;
             width: 100%;
-            background-color: #222;
+            background-color: #222; /* Dark container background */
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        body.light-mode .container {
+            background-color: #f9f9f9; /* Light container background */
         }
 
         h1 {
             color: #00a2ff;
             text-align: center;
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 20px;
@@ -46,15 +59,19 @@
             height: 300px;
             padding: 12px;
             margin-bottom: 20px;
-            border: 1px solid #555;
+            border: 1px solid #555; /* Dark border */
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 16px;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            background-color: #333;
-            color: #eee;
+            background-color: #ffffff; /* White background for textarea */
+            color: #333; /* Dark text for textarea */
             resize: vertical;
             font-family: inherit;
+        }
+
+        body.light-mode textarea {
+            border-color: #ddd; /* Light border for light mode */
         }
 
         textarea:focus {
@@ -64,8 +81,7 @@
         }
 
         button {
-            width: 100%;
-            padding: 14px 20px;
+            padding: 10px 20px;
             background-color: #00a2ff;
             color: white;
             cursor: pointer;
@@ -73,7 +89,7 @@
             font-weight: bold;
             border-radius: 6px;
             transition: background-color 0.3s ease, transform 0.1s ease;
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Roboto', sans-serif;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -88,16 +104,140 @@
             cursor: not-allowed;
             transform: none;
         }
+
+        /* Floating Paste Icon */
+        .floating-icon {
+            position: absolute;
+            top: 120px;
+            right: 40px;
+            background-color: #00a2ff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            z-index: 1000;
+        }
+
+        .floating-icon:hover {
+            background-color: #007acc;
+            transform: translateY(-2px);
+        }
+
+        /* Toolbar Styles */
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar select, .toolbar input {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #555; /* Dark border */
+            background-color: #333; /* Dark background for toolbar */
+            color: #eee; /* Light text for toolbar */
+            font-family: inherit;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode .toolbar select, body.light-mode .toolbar input {
+            border-color: #ddd; /* Light border for light mode */
+            background-color: #fff; /* Light background for toolbar */
+            color: #333; /* Dark text for toolbar */
+        }
+
+        .toolbar button {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        /* Toggle Button */
+        .toggle-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #00a2ff;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            border-radius: 6px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            font-family: 'Roboto', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 1000;
+        }
+
+        .toggle-button:hover {
+            background-color: #007acc;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Text to PDF Converter</h1>
-        <textarea id="textInput" placeholder="Paste your text here..."></textarea>
-        <button onclick="downloadPdf()">Download as PDF</button>
+        <h1>Resume Editor</h1>
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <select id="fontFamily">
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Open Sans', sans-serif">Open Sans</option>
+                <option value="'Roboto', sans-serif">Roboto</option>
+                <option value="'Lato', sans-serif">Lato</option>
+                <option value="'Montserrat', sans-serif">Montserrat</option>
+                <option value="'Merriweather', serif">Merriweather</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="'Courier New', monospace">Courier New</option>
+            </select>
+            <select id="fontSize">
+                <option value="12">12px</option>
+                <option value="14">14px</option>
+                <option value="16">16px</option>
+                <option value="18">18px</option>
+                <option value="20">20px</option>
+                <option value="24">24px</option>
+            </select>
+            <select id="textAlign">
+                <option value="left">Left Align</option>
+                <option value="center">Center Align</option>
+                <option value="right">Right Align</option>
+                <option value="justify">Justify</option>
+            </select>
+            <input type="color" id="textColor" value="#333333">
+            <button onclick="downloadPdf()">Download as PDF</button>
+        </div>
+        <textarea id="textInput" placeholder="Paste your resume here..."></textarea>
     </div>
 
+    <!-- Floating Paste Icon -->
+    <button class="floating-icon" onclick="pasteResume()">
+        <i class="fas fa-paste"></i>
+    </button>
+
+    <!-- Toggle Button -->
+    <button class="toggle-button" onclick="toggleBackground()">Toggle Background</button>
+
     <script>
+        // Function to paste resume from clipboard
+        function pasteResume() {
+            navigator.clipboard.readText().then(text => {
+                document.getElementById('textInput').value = text;
+            }).catch(err => {
+                console.error('Failed to read clipboard contents: ', err);
+            });
+        }
+
+        // Function to download PDF
         function downloadPdf() {
             const text = document.getElementById('textInput').value.trim();
 
@@ -113,22 +253,44 @@
 
             const doc = new window.jspdf.jsPDF();
 
-            // Get the font family and size from the textarea
-            const textarea = document.getElementById('textInput');
-            const computedStyle = window.getComputedStyle(textarea);
-            const fontFamily = computedStyle.fontFamily;
-            const fontSize = parseInt(computedStyle.fontSize);
+            // Get the font family, size, and color from the toolbar
+            const fontFamily = document.getElementById('fontFamily').value;
+            const fontSize = parseInt(document.getElementById('fontSize').value);
+            const textColor = document.getElementById('textColor').value;
 
             // Set the font in the PDF
             doc.setFont(fontFamily);
             doc.setFontSize(fontSize);
+            doc.setTextColor(textColor);
 
             // Split text into lines and add to PDF
             const lines = doc.splitTextToSize(text, 180); // Adjust the width (180) as needed
             doc.text(lines, 10, 10);
 
             // Save the PDF
-            doc.save("editorush.pdf");
+            doc.save("resume.pdf");
+        }
+
+        // Toolbar functionality
+        document.getElementById('fontFamily').addEventListener('change', function() {
+            document.getElementById('textInput').style.fontFamily = this.value;
+        });
+
+        document.getElementById('fontSize').addEventListener('change', function() {
+            document.getElementById('textInput').style.fontSize = this.value + 'px';
+        });
+
+        document.getElementById('textAlign').addEventListener('change', function() {
+            document.getElementById('textInput').style.textAlign = this.value;
+        });
+
+        document.getElementById('textColor').addEventListener('input', function() {
+            document.getElementById('textInput').style.color = this.value;
+        });
+
+        // Toggle Background Functionality
+        function toggleBackground() {
+            document.body.classList.toggle('light-mode');
         }
     </script>
 </body>
